@@ -195,7 +195,7 @@ const Index = () => {
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm">© 2025 EMS Pro. All rights reserved.</div>
+          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm">© 2025 EMP SYNC . All rights reserved.</div>
         </div>
       </footer>
 
