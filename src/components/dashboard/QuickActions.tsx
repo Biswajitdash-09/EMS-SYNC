@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { UserPlus, DollarSign, Calendar, FileText, BarChart3 } from 'lucide-react';
+import { UserPlus, DollarSign, Calendar, FileText, BarChart3, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const QuickActions = () => {
@@ -10,10 +10,23 @@ const QuickActions = () => {
   return (
     <Card className="mt-8">
       <CardHeader>
-        <CardTitle className="text-lg">Quick Actions</CardTitle>
-        <CardDescription>
-          Frequently used actions for faster workflow
-        </CardDescription>
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle className="text-lg">Quick Actions</CardTitle>
+            <CardDescription>
+              Frequently used actions for faster workflow
+            </CardDescription>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => navigate('/quick-actions')}
+            className="flex items-center space-x-2"
+          >
+            <span>View All</span>
+            <ExternalLink className="w-4 h-4" />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
