@@ -5,7 +5,6 @@ import StatsCards from '@/components/dashboard/StatsCards';
 import ModulesGrid from '@/components/dashboard/ModulesGrid';
 import RecentActivities from '@/components/dashboard/RecentActivities';
 import QuickActions from '@/components/dashboard/QuickActions';
-import AIChatbot from '@/components/dashboard/AIChatbot';
 
 const Dashboard = () => {
   const [activeModule, setActiveModule] = useState('overview');
@@ -29,9 +28,6 @@ const Dashboard = () => {
 
         <QuickActions />
       </div>
-
-      {/* AI Chatbot */}
-      <AIChatbot />
     </div>
   );
 };

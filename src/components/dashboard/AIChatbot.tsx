@@ -1,10 +1,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, X, Bot, User, Sparkles } from 'lucide-react';
+import { Send, X, Bot, User, Sparkles, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Message {
   id: string;
@@ -13,8 +12,12 @@ interface Message {
   timestamp: Date;
 }
 
-const AIChatbot = () => {
-  const [isOpen, setIsOpen] = useState(false);
+interface AIChatbotProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const AIChatbot: React.FC<AIChatbotProps> = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -40,6 +43,18 @@ const AIChatbot = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   const generateContent = async (prompt: string) => {
     try {
@@ -110,7 +125,6 @@ Now, answer the following query: ${prompt}`
     const text = messageText || inputValue.trim();
     if (!text) return;
 
-    // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       text,
@@ -121,7 +135,6 @@ Now, answer the following query: ${prompt}`
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
 
-    // Generate bot response
     const botResponse = await generateContent(text);
     
     const botMessage: Message = {
@@ -145,95 +158,102 @@ Now, answer the following query: ${prompt}`
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  if (!isOpen) {
-    return (
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={() => setIsOpen(true)}
-          className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg animate-pulse"
-          size="icon"
-        >
-          <MessageCircle className="h-6 w-6 text-white" />
-        </Button>
-      </div>
-    );
-  }
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 animate-scale-in">
-      <Card className="w-96 h-[500px] shadow-2xl border-0 bg-white dark:bg-gray-900">
-        <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="relative">
-                <Bot className="h-6 w-6" />
-                <Sparkles className="h-3 w-3 absolute -top-1 -right-1 text-yellow-300 animate-pulse" />
+    <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm animate-fade-in">
+      <div className="fixed inset-0 bg-white dark:bg-gray-900 animate-scale-in">
+        {/* Header */}
+        <div className="h-16 bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-between px-4 sm:px-6 shadow-lg">
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <Bot className="h-6 w-6 text-white" />
               </div>
-              <CardTitle className="text-lg font-semibold">AI Assistant</CardTitle>
+              <Sparkles className="h-4 w-4 absolute -top-1 -right-1 text-yellow-300 animate-pulse" />
             </div>
+            <div>
+              <h1 className="text-xl font-bold text-white">AI Assistant</h1>
+              <p className="text-blue-100 text-sm">Your HR Virtual Assistant</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2">
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setIsOpen(false)}
-              className="text-white hover:bg-white/20 h-8 w-8"
+              onClick={onClose}
+              className="text-white hover:bg-white/20 h-10 w-10"
             >
-              <X className="h-4 w-4" />
+              <Minimize2 className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="text-white hover:bg-white/20 h-10 w-10"
+            >
+              <X className="h-5 w-5" />
             </Button>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent className="p-0 flex flex-col h-[440px]">
-          {/* Quick Access Buttons */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Quick questions:</p>
-            <div className="space-y-2">
-              {quickAccessQuestions.map((question, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleSendMessage(question)}
-                  className="w-full text-left justify-start h-auto py-2 px-3 text-xs hover:bg-blue-50 dark:hover:bg-blue-900/20 animate-fade-in"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  {question}
-                </Button>
-              ))}
-            </div>
+        {/* Quick Access Questions */}
+        <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Quick questions:</p>
+          <div className="flex flex-wrap gap-2 sm:gap-3">
+            {quickAccessQuestions.map((question, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                size="sm"
+                onClick={() => handleSendMessage(question)}
+                className="text-xs sm:text-sm bg-white dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 border-gray-300 dark:border-gray-600 transition-all duration-200 animate-fade-in"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                {question}
+              </Button>
+            ))}
           </div>
+        </div>
 
-          {/* Messages Area */}
-          <ScrollArea className="flex-1 p-4">
-            <div className="space-y-4">
+        {/* Chat Messages Area */}
+        <div className="flex-1 overflow-hidden" style={{ height: 'calc(100vh - 16rem)' }}>
+          <ScrollArea className="h-full px-4 sm:px-6 py-4">
+            <div className="space-y-4 max-w-4xl mx-auto">
               {messages.map((message) => (
                 <div
                   key={message.id}
                   className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
                 >
-                  <div
-                    className={`max-w-[80%] rounded-lg p-3 ${
-                      message.sender === 'user'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
-                    }`}
-                  >
-                    <div className="flex items-start space-x-2">
-                      {message.sender === 'bot' && (
-                        <Bot className="h-4 w-4 mt-0.5 text-blue-600 dark:text-blue-400" />
-                      )}
-                      {message.sender === 'user' && (
-                        <User className="h-4 w-4 mt-0.5" />
-                      )}
-                      <div className="flex-1">
-                        <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                        <p className={`text-xs mt-1 ${
-                          message.sender === 'user' 
-                            ? 'text-blue-100' 
-                            : 'text-gray-500 dark:text-gray-400'
-                        }`}>
-                          {formatTime(message.timestamp)}
-                        </p>
+                  <div className={`flex max-w-[85%] sm:max-w-[70%] ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                    <div className={`flex-shrink-0 ${message.sender === 'user' ? 'ml-3' : 'mr-3'}`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                        message.sender === 'user' 
+                          ? 'bg-blue-600' 
+                          : 'bg-gradient-to-r from-purple-500 to-blue-500'
+                      }`}>
+                        {message.sender === 'user' ? (
+                          <User className="h-4 w-4 text-white" />
+                        ) : (
+                          <Bot className="h-4 w-4 text-white" />
+                        )}
                       </div>
+                    </div>
+                    
+                    <div className={`rounded-2xl px-4 py-3 shadow-sm ${
+                      message.sender === 'user'
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white'
+                        : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100'
+                    }`}>
+                      <p className="text-sm sm:text-base whitespace-pre-wrap leading-relaxed">{message.text}</p>
+                      <p className={`text-xs mt-2 ${
+                        message.sender === 'user' 
+                          ? 'text-blue-100' 
+                          : 'text-gray-500 dark:text-gray-400'
+                      }`}>
+                        {formatTime(message.timestamp)}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -241,14 +261,19 @@ Now, answer the following query: ${prompt}`
               
               {isLoading && (
                 <div className="flex justify-start animate-fade-in">
-                  <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 max-w-[80%]">
+                  <div className="flex mr-3">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
+                      <Bot className="h-4 w-4 text-white" />
+                    </div>
+                  </div>
+                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3 shadow-sm">
                     <div className="flex items-center space-x-2">
-                      <Bot className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                       <div className="flex space-x-1">
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
                       </div>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">AI is thinking...</span>
                     </div>
                   </div>
                 </div>
@@ -256,30 +281,32 @@ Now, answer the following query: ${prompt}`
               <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
+        </div>
 
-          {/* Input Area */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex space-x-2">
+        {/* Input Area */}
+        <div className="h-20 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex space-x-3">
               <Input
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me about employee management..."
-                className="flex-1"
+                className="flex-1 h-12 text-base border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled={isLoading}
               />
               <Button
                 onClick={() => handleSendMessage()}
                 disabled={!inputValue.trim() || isLoading}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="h-12 w-12 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 transition-all duration-200"
                 size="icon"
               >
-                <Send className="h-4 w-4" />
+                <Send className="h-5 w-5" />
               </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
