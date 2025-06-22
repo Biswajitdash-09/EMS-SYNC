@@ -7,6 +7,49 @@ import { useNavigate } from 'react-router-dom';
 const QuickActions = () => {
   const navigate = useNavigate();
 
+  const quickActions = [
+    {
+      id: 'add-employee',
+      title: 'Add Employee',
+      description: 'Onboard new team members',
+      icon: UserPlus,
+      color: 'blue',
+      route: '/quick-actions'
+    },
+    {
+      id: 'process-payroll',
+      title: 'Process Payroll',
+      description: 'Monthly salary processing',
+      icon: DollarSign,
+      color: 'green',
+      route: '/quick-actions'
+    },
+    {
+      id: 'leave-requests',
+      title: 'Leave Requests',
+      description: 'Review pending applications',
+      icon: Calendar,
+      color: 'orange',
+      route: '/quick-actions'
+    },
+    {
+      id: 'generate-report',
+      title: 'Generate Report',
+      description: 'Business intelligence reports',
+      icon: FileText,
+      color: 'purple',
+      route: '/quick-actions'
+    },
+    {
+      id: 'performance-review',
+      title: 'Performance Review',
+      description: 'Employee evaluations',
+      icon: BarChart3,
+      color: 'red',
+      route: '/quick-actions'
+    }
+  ];
+
   return (
     <Card className="mt-8">
       <CardHeader>
@@ -30,46 +73,26 @@ const QuickActions = () => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          <Button 
-            variant="outline" 
-            className="h-auto p-4 flex flex-col items-center space-y-2 hover:bg-blue-50 hover:border-blue-300" 
-            onClick={() => navigate('/employees/new')}
-          >
-            <UserPlus className="w-6 h-6 text-blue-600" />
-            <span className="text-sm">Add Employee</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto p-4 flex flex-col items-center space-y-2 hover:bg-green-50 hover:border-green-300" 
-            onClick={() => navigate('/payroll/process')}
-          >
-            <DollarSign className="w-6 h-6 text-green-600" />
-            <span className="text-sm">Process Payroll</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto p-4 flex flex-col items-center space-y-2 hover:bg-orange-50 hover:border-orange-300" 
-            onClick={() => navigate('/leave/requests')}
-          >
-            <Calendar className="w-6 h-6 text-orange-600" />
-            <span className="text-sm">Leave Requests</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto p-4 flex flex-col items-center space-y-2 hover:bg-purple-50 hover:border-purple-300" 
-            onClick={() => navigate('/reports/generate')}
-          >
-            <FileText className="w-6 h-6 text-purple-600" />
-            <span className="text-sm">Generate Report</span>
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-auto p-4 flex flex-col items-center space-y-2 hover:bg-red-50 hover:border-red-300" 
-            onClick={() => navigate('/performance/review')}
-          >
-            <BarChart3 className="w-6 h-6 text-red-600" />
-            <span className="text-sm">Performance Review</span>
-          </Button>
+          {quickActions.map((action) => {
+            const Icon = action.icon;
+            return (
+              <div key={action.id} className="group">
+                <Button 
+                  variant="outline" 
+                  className="h-auto p-4 flex flex-col items-center space-y-3 hover:bg-blue-50 hover:border-blue-300 dark:hover:bg-blue-900/20 dark:hover:border-blue-600 w-full transition-all duration-300" 
+                  onClick={() => navigate(action.route)}
+                >
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center bg-${action.color}-100 dark:bg-${action.color}-900/30 group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className={`w-5 h-5 text-${action.color}-600 dark:text-${action.color}-400`} />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{action.title}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{action.description}</div>
+                  </div>
+                </Button>
+              </div>
+            );
+          })}
         </div>
       </CardContent>
     </Card>

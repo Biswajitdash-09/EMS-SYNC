@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import QuickActionsPage from "./pages/QuickActionsPage";
@@ -21,26 +22,29 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/employees" element={<EmployeeRecords />} />
-          <Route path="/hr" element={<HRManagement />} />
-          <Route path="/payroll" element={<PayrollSystem />} />
-          <Route path="/leave" element={<LeaveManagement />} />
-          <Route path="/performance" element={<PerformanceAnalytics />} />
-          <Route path="/time-tracking" element={<TimeTracking />} />
-          <Route path="/reports" element={<ReportsAnalytics />} />
-          <Route path="/settings" element={<SystemSettings />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider defaultTheme="system" storageKey="lovable-ui-theme">
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/quick-actions" element={<QuickActionsPage />} />
+            <Route path="/employees" element={<EmployeeRecords />} />
+            <Route path="/hr" element={<HRManagement />} />
+            <Route path="/payroll" element={<PayrollSystem />} />
+            <Route path="/leave" element={<LeaveManagement />} />
+            <Route path="/performance" element={<PerformanceAnalytics />} />
+            <Route path="/time-tracking" element={<TimeTracking />} />
+            <Route path="/reports" element={<ReportsAnalytics />} />
+            <Route path="/settings" element={<SystemSettings />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
