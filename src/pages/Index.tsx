@@ -76,9 +76,7 @@ const Index = () => {
               <Button onClick={() => setShowAuth(true)} size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 text-lg rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105">
                 Start Free Trial
               </Button>
-              <Button variant="outline" size="lg" className="border-2 border-blue-200 text-blue-700 hover:bg-blue-50 px-8 py-4 text-lg rounded-xl transition-all duration-300">
-                Watch Demo
-              </Button>
+              
             </div>
           </div>
         </div>
