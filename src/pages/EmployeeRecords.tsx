@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,6 +34,7 @@ const EmployeeRecords = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const [modalEmployee, setModalEmployee] = useState<Employee | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -44,7 +46,14 @@ const EmployeeRecords = () => {
   };
 
   const handleViewEmployee = (employee: Employee) => {
+    setModalEmployee(employee);
+  };
+
+  const handleSelectEmployee = (employee: Employee) => {
     setSelectedEmployee(employee);
+    if (activeTab === 'overview') {
+      setActiveTab('personal');
+    }
   };
 
   const handleEditEmployee = (employee: Employee) => {
@@ -61,6 +70,10 @@ const EmployeeRecords = () => {
   const handleDeleteEmployee = (employeeId: string) => {
     if (confirm('Are you sure you want to delete this employee?')) {
       deleteEmployee(employeeId);
+      // Clear selected employee if it was deleted
+      if (selectedEmployee?.id === employeeId) {
+        setSelectedEmployee(null);
+      }
     }
   };
 
@@ -138,7 +151,13 @@ const EmployeeRecords = () => {
                     </TableHeader>
                     <TableBody>
                       {employees.map((employee) => (
-                        <TableRow key={employee.id}>
+                        <TableRow 
+                          key={employee.id}
+                          className={`cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 ${
+                            selectedEmployee?.id === employee.id ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                          }`}
+                          onClick={() => handleSelectEmployee(employee)}
+                        >
                           <TableCell className="font-medium">{employee.id}</TableCell>
                           <TableCell>
                             <div>
@@ -155,7 +174,7 @@ const EmployeeRecords = () => {
                           </TableCell>
                           <TableCell>{new Date(employee.joinDate).toLocaleDateString()}</TableCell>
                           <TableCell>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                               <Button 
                                 variant="ghost" 
                                 size="sm"
@@ -201,6 +220,11 @@ const EmployeeRecords = () => {
                 <CardTitle className="flex items-center gap-2">
                   <Phone className="w-5 h-5" />
                   Personal Information & Emergency Contacts
+                  {selectedEmployee && (
+                    <span className="text-sm font-normal text-gray-500">
+                      - {selectedEmployee.name}
+                    </span>
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -240,6 +264,11 @@ const EmployeeRecords = () => {
                 <CardTitle className="flex items-center gap-2">
                   <Briefcase className="w-5 h-5" />
                   Employment History & Job Details
+                  {selectedEmployee && (
+                    <span className="text-sm font-normal text-gray-500">
+                      - {selectedEmployee.name}
+                    </span>
+                  )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -293,6 +322,11 @@ const EmployeeRecords = () => {
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="w-5 h-5" />
                   Employee Documents
+                  {selectedEmployee && (
+                    <span className="text-sm font-normal text-gray-500">
+                      - {selectedEmployee.name}
+                    </span>
+                  )}
                 </CardTitle>
                 <CardDescription>Manage ID cards, contracts, and other important documents</CardDescription>
               </CardHeader>
@@ -337,13 +371,13 @@ const EmployeeRecords = () => {
       </div>
 
       {/* Employee Details Modal */}
-      {selectedEmployee && (
-        <Dialog open={!!selectedEmployee} onOpenChange={() => setSelectedEmployee(null)}>
+      {modalEmployee && (
+        <Dialog open={!!modalEmployee} onOpenChange={() => setModalEmployee(null)}>
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Employee Details - {selectedEmployee.name}</DialogTitle>
+              <DialogTitle>Employee Details - {modalEmployee.name}</DialogTitle>
               <DialogDescription>
-                Complete information for {selectedEmployee.name} ({selectedEmployee.id})
+                Complete information for {modalEmployee.name} ({modalEmployee.id})
               </DialogDescription>
             </DialogHeader>
             
@@ -352,21 +386,21 @@ const EmployeeRecords = () => {
                 <div>
                   <h4 className="font-semibold mb-2">Basic Information</h4>
                   <div className="space-y-1 text-sm">
-                    <div><strong>ID:</strong> {selectedEmployee.id}</div>
-                    <div><strong>Name:</strong> {selectedEmployee.name}</div>
-                    <div><strong>Email:</strong> {selectedEmployee.email}</div>
-                    <div><strong>Phone:</strong> {selectedEmployee.phone}</div>
+                    <div><strong>ID:</strong> {modalEmployee.id}</div>
+                    <div><strong>Name:</strong> {modalEmployee.name}</div>
+                    <div><strong>Email:</strong> {modalEmployee.email}</div>
+                    <div><strong>Phone:</strong> {modalEmployee.phone}</div>
                   </div>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">Employment</h4>
                   <div className="space-y-1 text-sm">
-                    <div><strong>Department:</strong> {selectedEmployee.department}</div>
-                    <div><strong>Role:</strong> {selectedEmployee.role}</div>
-                    <div><strong>Manager:</strong> {selectedEmployee.manager}</div>
+                    <div><strong>Department:</strong> {modalEmployee.department}</div>
+                    <div><strong>Role:</strong> {modalEmployee.role}</div>
+                    <div><strong>Manager:</strong> {modalEmployee.manager}</div>
                     <div><strong>Status:</strong> 
-                      <Badge className={`ml-1 ${getStatusColor(selectedEmployee.status)}`}>
-                        {selectedEmployee.status}
+                      <Badge className={`ml-1 ${getStatusColor(modalEmployee.status)}`}>
+                        {modalEmployee.status}
                       </Badge>
                     </div>
                   </div>
