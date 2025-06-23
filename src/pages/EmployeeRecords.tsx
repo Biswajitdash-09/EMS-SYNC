@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -285,7 +284,7 @@ const EmployeeRecords = () => {
                   </div>
                 )}
               </CardContent>
-            </Car>
+            </Card>
           </TabsContent>
 
           <TabsContent value="documents" className="space-y-6">
