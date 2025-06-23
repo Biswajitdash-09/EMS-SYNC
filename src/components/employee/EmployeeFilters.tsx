@@ -21,34 +21,42 @@ const EmployeeFilters = ({
   departments,
   statuses
 }: EmployeeFiltersProps) => {
-  const hasActiveFilters = departmentFilter || statusFilter;
+  const hasActiveFilters = departmentFilter && departmentFilter !== 'all' || statusFilter && statusFilter !== 'all';
 
   const clearAllFilters = () => {
-    setDepartmentFilter('');
-    setStatusFilter('');
+    setDepartmentFilter('all');
+    setStatusFilter('all');
+  };
+
+  const handleDepartmentChange = (value: string) => {
+    setDepartmentFilter(value === 'all' ? '' : value);
+  };
+
+  const handleStatusChange = (value: string) => {
+    setStatusFilter(value === 'all' ? '' : value);
   };
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
       <div className="flex flex-wrap gap-2">
-        <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
+        <Select value={departmentFilter || 'all'} onValueChange={handleDepartmentChange}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by Department" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Departments</SelectItem>
+            <SelectItem value="all">All Departments</SelectItem>
             {departments.map(dept => (
               <SelectItem key={dept} value={dept}>{dept}</SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <Select value={statusFilter || 'all'} onValueChange={handleStatusChange}>
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Filter by Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Statuses</SelectItem>
+            <SelectItem value="all">All Statuses</SelectItem>
             {statuses.map(status => (
               <SelectItem key={status} value={status}>{status}</SelectItem>
             ))}
@@ -59,7 +67,7 @@ const EmployeeFilters = ({
       {hasActiveFilters && (
         <div className="flex items-center gap-2">
           <div className="flex gap-1">
-            {departmentFilter && (
+            {departmentFilter && departmentFilter !== 'all' && (
               <Badge variant="secondary" className="gap-1">
                 {departmentFilter}
                 <X 
@@ -68,7 +76,7 @@ const EmployeeFilters = ({
                 />
               </Badge>
             )}
-            {statusFilter && (
+            {statusFilter && statusFilter !== 'all' && (
               <Badge variant="secondary" className="gap-1">
                 {statusFilter}
                 <X 
