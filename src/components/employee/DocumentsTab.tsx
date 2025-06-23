@@ -2,9 +2,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { FileText, Upload } from 'lucide-react';
 import { Employee } from '@/hooks/useEmployeeData';
+import { useRef } from 'react';
 
 interface DocumentsTabProps {
   selectedEmployee: Employee | null;
@@ -12,6 +12,12 @@ interface DocumentsTabProps {
 }
 
 const DocumentsTab = ({ selectedEmployee, onDocumentUpload }: DocumentsTabProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -52,18 +58,20 @@ const DocumentsTab = ({ selectedEmployee, onDocumentUpload }: DocumentsTabProps)
             
             <div className="mt-6">
               <Input
+                ref={fileInputRef}
                 type="file"
-                id="document-upload"
                 accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                 onChange={onDocumentUpload}
                 className="hidden"
               />
-              <Label htmlFor="document-upload" asChild>
-                <Button variant="outline" className="cursor-pointer">
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Document
-                </Button>
-              </Label>
+              <Button 
+                variant="outline" 
+                onClick={handleUploadClick}
+                type="button"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Document
+              </Button>
             </div>
           </div>
         ) : (
