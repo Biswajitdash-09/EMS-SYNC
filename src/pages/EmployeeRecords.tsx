@@ -11,6 +11,7 @@ import EmployeeFilters from '@/components/employee/EmployeeFilters';
 import AddEmployeeModal from '@/components/employee/AddEmployeeModal';
 import EmployeeTable from '@/components/employee/EmployeeTable';
 import EmployeeDetailsModal from '@/components/employee/EmployeeDetailsModal';
+import EditEmployeeModal from '@/components/employee/EditEmployeeModal';
 import PersonalDetailsTab from '@/components/employee/PersonalDetailsTab';
 import EmploymentHistoryTab from '@/components/employee/EmploymentHistoryTab';
 import DocumentsTab from '@/components/employee/DocumentsTab';
@@ -56,6 +57,11 @@ const EmployeeRecords = () => {
     if (editingEmployee) {
       updateEmployee(editingEmployee.id, updates);
       setEditingEmployee(null);
+      
+      // Update selected employee if it's the same as the one being edited
+      if (selectedEmployee?.id === editingEmployee.id) {
+        setSelectedEmployee(prev => prev ? { ...prev, ...updates } : null);
+      }
     }
   };
 
@@ -183,6 +189,12 @@ const EmployeeRecords = () => {
       <EmployeeDetailsModal 
         employee={modalEmployee}
         onClose={() => setModalEmployee(null)}
+      />
+
+      <EditEmployeeModal 
+        employee={editingEmployee}
+        onClose={() => setEditingEmployee(null)}
+        onUpdateEmployee={handleUpdateEmployee}
       />
     </div>
   );
