@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Users, Search, FileText, Calendar, Phone, MapPin, Briefcase, Eye, Edit, Trash2 } from 'lucide-react';
+import { Users, Search, FileText, Calendar, Phone, MapPin, Briefcase, Eye, Edit, Trash2, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEmployeeData, Employee } from '@/hooks/useEmployeeData';
 import EmployeeFilters from '@/components/employee/EmployeeFilters';
@@ -75,6 +74,32 @@ const EmployeeRecords = () => {
         setSelectedEmployee(null);
       }
     }
+  };
+
+  const handleDocumentUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !selectedEmployee) return;
+
+    // Create new document object
+    const newDocument = {
+      id: `doc${Date.now()}`,
+      name: file.name,
+      type: file.type.includes('pdf') ? 'PDF' : file.type.includes('image') ? 'Image' : 'Document',
+      size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+      uploadDate: new Date().toISOString().split('T')[0]
+    };
+
+    // Update employee with new document
+    const updatedDocuments = [...selectedEmployee.documents, newDocument];
+    updateEmployee(selectedEmployee.id, { documents: updatedDocuments });
+    
+    // Update selected employee state
+    setSelectedEmployee(prev => prev ? { ...prev, documents: updatedDocuments } : null);
+    
+    // Clear the input
+    event.target.value = '';
+    
+    console.log('Document uploaded:', newDocument);
   };
 
   return (
@@ -354,10 +379,21 @@ const EmployeeRecords = () => {
                       </div>
                     )}
                     
-                    <Button className="mt-6" variant="outline">
-                      <FileText className="w-4 h-4 mr-2" />
-                      Upload Document
-                    </Button>
+                    <div className="mt-6">
+                      <Input
+                        type="file"
+                        id="document-upload"
+                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                        onChange={handleDocumentUpload}
+                        className="hidden"
+                      />
+                      <Label htmlFor="document-upload" asChild>
+                        <Button variant="outline" className="cursor-pointer">
+                          <Upload className="w-4 h-4 mr-2" />
+                          Upload Document
+                        </Button>
+                      </Label>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-8 text-gray-500">
