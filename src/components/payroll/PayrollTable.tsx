@@ -22,17 +22,54 @@ interface PayrollTableProps {
 const PayrollTable = ({ payrollData }: PayrollTableProps) => {
   const { toast } = useToast();
 
-  const handleDownloadPayslip = (employeeId: string, employeeName: string) => {
-    // Simulate PDF download
-    const link = document.createElement('a');
-    link.href = '#';
-    link.download = `payslip_${employeeId}_${employeeName.replace(' ', '_')}_June2024.pdf`;
-    link.click();
+  const generatePayslipContent = (employee: PayrollEmployee) => {
+    const content = `
+      PAYSLIP - ${employee.name}
+      Employee ID: ${employee.id}
+      Pay Period: June 2024
+      Generated on: ${new Date().toLocaleDateString()}
+      
+      EARNINGS:
+      Base Salary: $${employee.baseSalary.toLocaleString()}
+      Bonuses: $${employee.bonuses.toLocaleString()}
+      Total Earnings: $${(employee.baseSalary + employee.bonuses).toLocaleString()}
+      
+      DEDUCTIONS:
+      Total Deductions: $${employee.deductions.toLocaleString()}
+      
+      NET PAY: $${employee.netPay.toLocaleString()}
+      
+      Status: ${employee.status}
+      
+      This payslip is generated electronically and is valid without signature.
+    `;
     
-    toast({
-      title: "Payslip Downloaded",
-      description: `Payslip for ${employeeName} has been downloaded.`,
-    });
+    const blob = new Blob([content], { type: 'text/plain' });
+    return URL.createObjectURL(blob);
+  };
+
+  const handleDownloadPayslip = (employee: PayrollEmployee) => {
+    try {
+      const payslipUrl = generatePayslipContent(employee);
+      const link = document.createElement('a');
+      link.href = payslipUrl;
+      link.download = `payslip_${employee.id}_${employee.name.replace(' ', '_')}_June2024.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(payslipUrl);
+      
+      toast({
+        title: "Payslip Downloaded",
+        description: `Payslip for ${employee.name} has been downloaded successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "Unable to download the payslip. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -70,7 +107,7 @@ const PayrollTable = ({ payrollData }: PayrollTableProps) => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                onClick={() => handleDownloadPayslip(employee.id, employee.name)}
+                onClick={() => handleDownloadPayslip(employee)}
               >
                 <FileText className="w-4 h-4" />
               </Button>
