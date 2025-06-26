@@ -77,9 +77,9 @@ export const useHRData = () => {
     setPolicies(prev => [...prev, { ...policy, id: newId }]);
   };
 
-  const updatePolicy = (id: string, updates: Partial<Policy>) => {
+  const updatePolicy = (policyData: { id: string; [key: string]: any }) => {
     setPolicies(prev => prev.map(policy => 
-      policy.id === id ? { ...policy, ...updates } : policy
+      policy.id === policyData.id ? { ...policy, ...policyData } : policy
     ));
   };
 
@@ -92,9 +92,9 @@ export const useHRData = () => {
     setAnnouncements(prev => [...prev, { ...announcement, id: newId }]);
   };
 
-  const updateAnnouncement = (id: string, updates: Partial<Announcement>) => {
+  const updateAnnouncement = (announcementData: { id: string; [key: string]: any }) => {
     setAnnouncements(prev => prev.map(ann => 
-      ann.id === id ? { ...ann, ...updates } : ann
+      ann.id === announcementData.id ? { ...ann, ...announcementData } : ann
     ));
   };
 
