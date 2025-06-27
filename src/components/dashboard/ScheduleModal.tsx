@@ -2,44 +2,22 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar, Clock, MapPin, Users, Plus, Download, Edit, Trash2 } from 'lucide-react';
+import { Calendar, Plus, Download } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import AddEventForm from './schedule/AddEventForm';
+import ScheduleEventCard from './schedule/ScheduleEventCard';
+import ScheduleStats from './schedule/ScheduleStats';
+import { ScheduleEvent, generateScheduleExportContent, downloadFile } from './schedule/scheduleUtils';
 
 interface ScheduleModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-interface ScheduleEvent {
-  id: number;
-  title: string;
-  time: string;
-  location: string;
-  attendees: number;
-  type: 'meeting' | 'review' | 'maintenance' | 'training';
-  status: 'upcoming' | 'completed' | 'cancelled';
-  description?: string;
-  date: string;
-}
-
 const ScheduleModal = ({ isOpen, onClose }: ScheduleModalProps) => {
   const { toast } = useToast();
   const [showAddEvent, setShowAddEvent] = useState(false);
-  const [editingEvent, setEditingEvent] = useState<ScheduleEvent | null>(null);
-  const [newEvent, setNewEvent] = useState({
-    title: '',
-    time: '',
-    location: '',
-    attendees: 1,
-    type: 'meeting' as const,
-    description: '',
-    date: new Date().toISOString().split('T')[0]
-  });
 
   // Mock schedule data with more comprehensive information
   const [todaySchedule, setTodaySchedule] = useState<ScheduleEvent[]>([
@@ -125,18 +103,8 @@ const ScheduleModal = ({ isOpen, onClose }: ScheduleModalProps) => {
     }
   ]);
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'meeting': return 'bg-blue-100 text-blue-800';
-      case 'review': return 'bg-purple-100 text-purple-800';
-      case 'maintenance': return 'bg-orange-100 text-orange-800';
-      case 'training': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const handleAddEvent = () => {
-    if (!newEvent.title || !newEvent.time || !newEvent.location) {
+  const handleAddEvent = (eventData: any) => {
+    if (!eventData.title || !eventData.time || !eventData.location) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
@@ -147,25 +115,16 @@ const ScheduleModal = ({ isOpen, onClose }: ScheduleModalProps) => {
 
     const event: ScheduleEvent = {
       id: Date.now(),
-      ...newEvent,
+      ...eventData,
       status: 'upcoming'
     };
 
-    if (newEvent.date === new Date().toISOString().split('T')[0]) {
+    if (eventData.date === new Date().toISOString().split('T')[0]) {
       setTodaySchedule(prev => [...prev, event]);
     } else {
       setUpcomingEvents(prev => [...prev, event]);
     }
 
-    setNewEvent({
-      title: '',
-      time: '',
-      location: '',
-      attendees: 1,
-      type: 'meeting',
-      description: '',
-      date: new Date().toISOString().split('T')[0]
-    });
     setShowAddEvent(false);
     
     toast({
@@ -188,55 +147,10 @@ const ScheduleModal = ({ isOpen, onClose }: ScheduleModalProps) => {
   };
 
   const handleExportSchedule = () => {
-    const scheduleData = {
-      today: todaySchedule,
-      upcoming: upcomingEvents,
-      exportDate: new Date().toISOString(),
-      totalEvents: todaySchedule.length + upcomingEvents.length
-    };
-
-    const content = `
-SCHEDULE EXPORT - ${new Date().toLocaleDateString()}
-==============================================
-
-TODAY'S SCHEDULE (${new Date().toLocaleDateString()}):
-${todaySchedule.map(event => `
-• ${event.title}
-  Time: ${event.time}
-  Location: ${event.location}
-  Attendees: ${event.attendees}
-  Type: ${event.type}
-  Description: ${event.description || 'No description'}
-`).join('\n')}
-
-UPCOMING EVENTS:
-${upcomingEvents.map(event => `
-• ${event.title}
-  Date: ${event.date}
-  Time: ${event.time}
-  Location: ${event.location}
-  Attendees: ${event.attendees}
-  Type: ${event.type}
-  Description: ${event.description || 'No description'}
-`).join('\n')}
-
-SUMMARY:
-Total Events: ${todaySchedule.length + upcomingEvents.length}
-Today's Events: ${todaySchedule.length}
-Upcoming Events: ${upcomingEvents.length}
-
-Generated on: ${new Date().toLocaleString()}
-    `.trim();
-
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `schedule-export-${new Date().toISOString().split('T')[0]}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const content = generateScheduleExportContent(todaySchedule, upcomingEvents);
+    const filename = `schedule-export-${new Date().toISOString().split('T')[0]}.txt`;
+    
+    downloadFile(content, filename);
 
     toast({
       title: "Schedule Exported",
@@ -278,88 +192,10 @@ Generated on: ${new Date().toLocaleString()}
         <div className="space-y-6">
           {/* Add Event Form */}
           {showAddEvent && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Add New Event</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="title">Event Title *</Label>
-                    <Input
-                      id="title"
-                      value={newEvent.title}
-                      onChange={(e) => setNewEvent(prev => ({ ...prev, title: e.target.value }))}
-                      placeholder="Enter event title"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="date">Date *</Label>
-                    <Input
-                      id="date"
-                      type="date"
-                      value={newEvent.date}
-                      onChange={(e) => setNewEvent(prev => ({ ...prev, date: e.target.value }))}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="time">Time *</Label>
-                    <Input
-                      id="time"
-                      value={newEvent.time}
-                      onChange={(e) => setNewEvent(prev => ({ ...prev, time: e.target.value }))}
-                      placeholder="e.g., 09:00 - 10:00"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="location">Location *</Label>
-                    <Input
-                      id="location"
-                      value={newEvent.location}
-                      onChange={(e) => setNewEvent(prev => ({ ...prev, location: e.target.value }))}
-                      placeholder="Enter location"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="attendees">Attendees</Label>
-                    <Input
-                      id="attendees"
-                      type="number"
-                      min="1"
-                      value={newEvent.attendees}
-                      onChange={(e) => setNewEvent(prev => ({ ...prev, attendees: parseInt(e.target.value) || 1 }))}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="type">Type</Label>
-                    <select
-                      id="type"
-                      value={newEvent.type}
-                      onChange={(e) => setNewEvent(prev => ({ ...prev, type: e.target.value as any }))}
-                      className="w-full p-2 border rounded-md"
-                    >
-                      <option value="meeting">Meeting</option>
-                      <option value="review">Review</option>
-                      <option value="training">Training</option>
-                      <option value="maintenance">Maintenance</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={newEvent.description}
-                    onChange={(e) => setNewEvent(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Enter event description (optional)"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button onClick={handleAddEvent}>Add Event</Button>
-                  <Button variant="outline" onClick={() => setShowAddEvent(false)}>Cancel</Button>
-                </div>
-              </CardContent>
-            </Card>
+            <AddEventForm
+              onAddEvent={handleAddEvent}
+              onCancel={() => setShowAddEvent(false)}
+            />
           )}
 
           {/* Today's Schedule */}
@@ -378,42 +214,11 @@ Generated on: ${new Date().toLocaleString()}
             <CardContent>
               <div className="space-y-4">
                 {todaySchedule.map((event) => (
-                  <div key={event.id} className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <div className="flex flex-col items-center gap-1 min-w-[80px]">
-                      <Clock className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm font-medium">{event.time}</span>
-                    </div>
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-medium">{event.title}</h4>
-                        <Badge className={getTypeColor(event.type)}>
-                          {event.type}
-                        </Badge>
-                      </div>
-                      {event.description && (
-                        <p className="text-sm text-gray-600">{event.description}</p>
-                      )}
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          <span>{event.location}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Users className="w-3 h-3" />
-                          <span>{event.attendees} attendees</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteEvent(event.id, true)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
+                  <ScheduleEventCard
+                    key={event.id}
+                    event={event}
+                    onDelete={(id) => handleDeleteEvent(id, true)}
+                  />
                 ))}
               </div>
             </CardContent>
@@ -430,80 +235,23 @@ Generated on: ${new Date().toLocaleString()}
             <CardContent>
               <div className="space-y-4">
                 {upcomingEvents.map((event) => (
-                  <div key={event.id} className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <div className="flex flex-col items-center gap-1 min-w-[80px]">
-                      <Calendar className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm font-medium">{event.date}</span>
-                    </div>
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-medium">{event.title}</h4>
-                        <Badge className={getTypeColor(event.type)}>
-                          {event.type}
-                        </Badge>
-                      </div>
-                      {event.description && (
-                        <p className="text-sm text-gray-600">{event.description}</p>
-                      )}
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          <span>{event.time}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          <span>{event.location}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Users className="w-3 h-3" />
-                          <span>{event.attendees} attendees</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteEvent(event.id, false)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
+                  <ScheduleEventCard
+                    key={event.id}
+                    event={event}
+                    onDelete={(id) => handleDeleteEvent(id, false)}
+                    showDate={true}
+                  />
                 ))}
               </div>
             </CardContent>
           </Card>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{todaySchedule.length}</div>
-                  <div className="text-sm text-gray-600">Today's Events</div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">{upcomingEvents.length}</div>
-                  <div className="text-sm text-gray-600">Upcoming Events</div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">
-                    {(todaySchedule.length + upcomingEvents.length) * 1.5}
-                  </div>
-                  <div className="text-sm text-gray-600">Hours Scheduled</div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <ScheduleStats
+            todayCount={todaySchedule.length}
+            upcomingCount={upcomingEvents.length}
+            totalHours={(todaySchedule.length + upcomingEvents.length) * 1.5}
+          />
         </div>
       </DialogContent>
     </Dialog>
