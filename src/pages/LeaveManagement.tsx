@@ -7,50 +7,56 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Plane, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar, Plane, Clock, CheckCircle, XCircle, AlertCircle, Plus, Settings, Trash2, Edit } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useLeaveData } from '@/hooks/useLeaveData';
+import { useEmployeeData } from '@/hooks/useEmployeeData';
+import NewLeaveRequestModal from '@/components/leave/NewLeaveRequestModal';
+import LeaveApprovalModal from '@/components/leave/LeaveApprovalModal';
+import HolidayModal from '@/components/leave/HolidayModal';
+import LeaveTypeModal from '@/components/leave/LeaveTypeModal';
+import { useToast } from "@/hooks/use-toast";
 
 const LeaveManagement = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  const {
+    leaveRequests,
+    leaveBalances,
+    leaveTypes,
+    holidays,
+    statusFilter,
+    typeFilter,
+    employeeFilter,
+    setStatusFilter,
+    setTypeFilter,
+    setEmployeeFilter,
+    addLeaveRequest,
+    approveLeaveRequest,
+    rejectLeaveRequest,
+    deleteLeaveRequest,
+    addLeaveType,
+    updateLeaveType,
+    deleteLeaveType,
+    addHoliday,
+    updateHoliday,
+    deleteHoliday,
+    getAvailableBalance,
+    pendingRequests,
+    approvedThisMonth
+  } = useLeaveData();
 
-  const leaveRequests = [
-    {
-      id: 'LR001',
-      employee: 'John Smith',
-      type: 'Vacation',
-      startDate: '2024-07-15',
-      endDate: '2024-07-19',
-      days: 5,
-      status: 'Pending',
-      reason: 'Family vacation'
-    },
-    {
-      id: 'LR002',
-      employee: 'Sarah Johnson',
-      type: 'Sick Leave',
-      startDate: '2024-06-20',
-      endDate: '2024-06-21',
-      days: 2,
-      status: 'Approved',
-      reason: 'Medical appointment'
-    },
-    {
-      id: 'LR003',
-      employee: 'Mike Chen',
-      type: 'Personal',
-      startDate: '2024-07-01',
-      endDate: '2024-07-01',
-      days: 1,
-      status: 'Rejected',
-      reason: 'Personal matters'
-    }
-  ];
+  const { allEmployees } = useEmployeeData();
 
-  const leaveBalances = [
-    { employee: 'John Smith', vacation: 15, sick: 8, personal: 3 },
-    { employee: 'Sarah Johnson', vacation: 12, sick: 5, personal: 2 },
-    { employee: 'Mike Chen', vacation: 20, sick: 10, personal: 4 }
-  ];
+  // Modal states
+  const [showNewRequestModal, setShowNewRequestModal] = useState(false);
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [showHolidayModal, setShowHolidayModal] = useState(false);
+  const [showLeaveTypeModal, setShowLeaveTypeModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [editingLeaveType, setEditingLeaveType] = useState(null);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -70,6 +76,50 @@ const LeaveManagement = () => {
     }
   };
 
+  const getHolidayColor = (type: string) => {
+    switch (type) {
+      case 'National': return 'bg-red-50 border-red-200 text-red-800';
+      case 'Company': return 'bg-blue-50 border-blue-200 text-blue-800';
+      case 'Regional': return 'bg-green-50 border-green-200 text-green-800';
+      default: return 'bg-gray-50 border-gray-200 text-gray-800';
+    }
+  };
+
+  const handleApprovalAction = (request: any) => {
+    setSelectedRequest(request);
+    setShowApprovalModal(true);
+  };
+
+  const handleEditLeaveType = (leaveType: any) => {
+    setEditingLeaveType(leaveType);
+    setShowLeaveTypeModal(true);
+  };
+
+  const handleDeleteLeaveType = (id: string) => {
+    if (confirm('Are you sure you want to delete this leave type?')) {
+      deleteLeaveType(id);
+      toast({
+        title: "Leave Type Deleted",
+        description: "The leave type has been removed successfully."
+      });
+    }
+  };
+
+  const handleDeleteHoliday = (id: string) => {
+    if (confirm('Are you sure you want to delete this holiday?')) {
+      deleteHoliday(id);
+      toast({
+        title: "Holiday Deleted",
+        description: "The holiday has been removed from the calendar."
+      });
+    }
+  };
+
+  const employeeOptions = allEmployees.map(emp => ({
+    id: emp.id,
+    name: emp.name
+  }));
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -85,7 +135,10 @@ const LeaveManagement = () => {
                 <h1 className="text-xl font-bold text-gray-900">Leave Management</h1>
               </div>
             </div>
-            <Button className="bg-orange-600 hover:bg-orange-700">
+            <Button 
+              className="bg-orange-600 hover:bg-orange-700"
+              onClick={() => setShowNewRequestModal(true)}
+            >
               <Calendar className="w-4 h-4 mr-2" />
               New Leave Request
             </Button>
@@ -94,6 +147,51 @@ const LeaveManagement = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-yellow-100 rounded-lg">
+                  <Clock className="w-6 h-6 text-yellow-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{pendingRequests}</p>
+                  <p className="text-sm text-gray-600">Pending Requests</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <CheckCircle className="w-6 h-6 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{approvedThisMonth}</p>
+                  <p className="text-sm text-gray-600">Approved This Month</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Calendar className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">{holidays.length}</p>
+                  <p className="text-sm text-gray-600">Holidays This Year</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         <Tabs defaultValue="requests" className="space-y-6">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="requests">Leave Requests</TabsTrigger>
@@ -108,6 +206,54 @@ const LeaveManagement = () => {
               <CardHeader>
                 <CardTitle>Leave Requests & Approval System</CardTitle>
                 <CardDescription>Manage and process employee leave requests</CardDescription>
+                
+                {/* Filters */}
+                <div className="flex flex-wrap gap-4 pt-4">
+                  <div className="flex items-center space-x-2">
+                    <Label>Status:</Label>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        <SelectItem value="Pending">Pending</SelectItem>
+                        <SelectItem value="Approved">Approved</SelectItem>
+                        <SelectItem value="Rejected">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Label>Type:</Label>
+                    <Select value={typeFilter} onValueChange={setTypeFilter}>
+                      <SelectTrigger className="w-32">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        {leaveTypes.map(type => (
+                          <SelectItem key={type.id} value={type.name}>{type.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Label>Employee:</Label>
+                    <Select value={employeeFilter} onValueChange={setEmployeeFilter}>
+                      <SelectTrigger className="w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All</SelectItem>
+                        {allEmployees.map(emp => (
+                          <SelectItem key={emp.id} value={emp.name}>{emp.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -141,16 +287,33 @@ const LeaveManagement = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {request.status === 'Pending' && (
-                            <div className="flex gap-2">
-                              <Button size="sm" variant="outline" className="text-green-600">
-                                <CheckCircle className="w-4 h-4" />
+                          <div className="flex gap-2">
+                            {request.status === 'Pending' && (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleApprovalAction(request)}
+                              >
+                                Review
                               </Button>
-                              <Button size="sm" variant="outline" className="text-red-600">
-                                <XCircle className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          )}
+                            )}
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="text-red-600"
+                              onClick={() => {
+                                if (confirm('Are you sure you want to delete this request?')) {
+                                  deleteLeaveRequest(request.id);
+                                  toast({
+                                    title: "Request Deleted",
+                                    description: "The leave request has been deleted."
+                                  });
+                                }
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -183,39 +346,41 @@ const LeaveManagement = () => {
                         <TableCell className="font-medium">{balance.employee}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <span>{balance.vacation} days</span>
+                            <span>{balance.vacation - balance.usedVacation}/{balance.vacation} days</span>
                             <div className="w-20 h-2 bg-gray-200 rounded">
                               <div 
                                 className="h-full bg-blue-500 rounded" 
-                                style={{ width: `${(balance.vacation / 25) * 100}%` }}
+                                style={{ width: `${((balance.vacation - balance.usedVacation) / balance.vacation) * 100}%` }}
                               ></div>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <span>{balance.sick} days</span>
+                            <span>{balance.sick - balance.usedSick}/{balance.sick} days</span>
                             <div className="w-20 h-2 bg-gray-200 rounded">
                               <div 
                                 className="h-full bg-green-500 rounded" 
-                                style={{ width: `${(balance.sick / 15) * 100}%` }}
+                                style={{ width: `${((balance.sick - balance.usedSick) / balance.sick) * 100}%` }}
                               ></div>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <span>{balance.personal} days</span>
+                            <span>{balance.personal - balance.usedPersonal}/{balance.personal} days</span>
                             <div className="w-20 h-2 bg-gray-200 rounded">
                               <div 
                                 className="h-full bg-purple-500 rounded" 
-                                style={{ width: `${(balance.personal / 5) * 100}%` }}
+                                style={{ width: `${((balance.personal - balance.usedPersonal) / balance.personal) * 100}%` }}
                               ></div>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell className="font-medium">
-                          {balance.vacation + balance.sick + balance.personal} days
+                          {(balance.vacation - balance.usedVacation) + 
+                           (balance.sick - balance.usedSick) + 
+                           (balance.personal - balance.usedPersonal)} days
                         </TableCell>
                       </TableRow>
                     ))}
@@ -228,39 +393,54 @@ const LeaveManagement = () => {
           <TabsContent value="types" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Leave Types Configuration</CardTitle>
-                <CardDescription>Configure different types of leave policies</CardDescription>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle>Leave Types Configuration</CardTitle>
+                    <CardDescription>Configure different types of leave policies</CardDescription>
+                  </div>
+                  <Button onClick={() => {
+                    setEditingLeaveType(null);
+                    setShowLeaveTypeModal(true);
+                  }}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Leave Type
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4">
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Vacation Leave</h4>
-                      <p className="text-sm text-gray-600">Annual vacation days • 25 days per year</p>
+                  {leaveTypes.map((type) => (
+                    <div key={type.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-4 h-4 rounded bg-${type.color}-500`}></div>
+                        <div>
+                          <h4 className="font-medium">{type.name}</h4>
+                          <p className="text-sm text-gray-600">
+                            {type.description} • {type.maxDays} days per year
+                            {type.carryForward && ' • Carry forward enabled'}
+                            {type.requiresApproval && ' • Requires approval'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleEditLeaveType(type)}
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="text-red-600"
+                          onClick={() => handleDeleteLeaveType(type.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <Button variant="outline" size="sm">Configure</Button>
-                  </div>
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Sick Leave</h4>
-                      <p className="text-sm text-gray-600">Medical leave • 15 days per year</p>
-                    </div>
-                    <Button variant="outline" size="sm">Configure</Button>
-                  </div>
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Personal Leave</h4>
-                      <p className="text-sm text-gray-600">Personal matters • 5 days per year</p>
-                    </div>
-                    <Button variant="outline" size="sm">Configure</Button>
-                  </div>
-                  <div className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">Maternity/Paternity</h4>
-                      <p className="text-sm text-gray-600">Family leave • 12 weeks</p>
-                    </div>
-                    <Button variant="outline" size="sm">Configure</Button>
-                  </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -269,49 +449,45 @@ const LeaveManagement = () => {
           <TabsContent value="calendar" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5" />
-                  Holiday Calendar
-                </CardTitle>
-                <CardDescription>Company holidays and important dates</CardDescription>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Calendar className="w-5 h-5" />
+                      Holiday Calendar
+                    </CardTitle>
+                    <CardDescription>Company holidays and important dates</CardDescription>
+                  </div>
+                  <Button onClick={() => setShowHolidayModal(true)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Holiday
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="p-4 border rounded-lg bg-red-50">
-                    <h4 className="font-medium text-red-800">Independence Day</h4>
-                    <p className="text-sm text-red-600">July 4, 2024</p>
-                    <p className="text-xs text-red-500">National Holiday</p>
-                  </div>
-                  <div className="p-4 border rounded-lg bg-blue-50">
-                    <h4 className="font-medium text-blue-800">Labor Day</h4>
-                    <p className="text-sm text-blue-600">September 2, 2024</p>
-                    <p className="text-xs text-blue-500">National Holiday</p>
-                  </div>
-                  <div className="p-4 border rounded-lg bg-green-50">
-                    <h4 className="font-medium text-green-800">Thanksgiving</h4>
-                    <p className="text-sm text-green-600">November 28, 2024</p>
-                    <p className="text-xs text-green-500">National Holiday</p>
-                  </div>
-                  <div className="p-4 border rounded-lg bg-purple-50">
-                    <h4 className="font-medium text-purple-800">Christmas Day</h4>
-                    <p className="text-sm text-purple-600">December 25, 2024</p>
-                    <p className="text-xs text-purple-500">National Holiday</p>
-                  </div>
-                  <div className="p-4 border rounded-lg bg-orange-50">
-                    <h4 className="font-medium text-orange-800">New Year's Day</h4>
-                    <p className="text-sm text-orange-600">January 1, 2025</p>
-                    <p className="text-xs text-orange-500">National Holiday</p>
-                  </div>
-                  <div className="p-4 border rounded-lg bg-gray-50">
-                    <h4 className="font-medium text-gray-800">Company Retreat</h4>
-                    <p className="text-sm text-gray-600">August 15-16, 2024</p>
-                    <p className="text-xs text-gray-500">Company Event</p>
-                  </div>
+                  {holidays.map((holiday) => (
+                    <div key={holiday.id} className={`p-4 border rounded-lg ${getHolidayColor(holiday.type)}`}>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-medium">{holiday.name}</h4>
+                          <p className="text-sm">{holiday.date}</p>
+                          <p className="text-xs mt-1">{holiday.type} Holiday</p>
+                          {holiday.description && (
+                            <p className="text-xs mt-1 opacity-75">{holiday.description}</p>
+                          )}
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="text-red-600 hover:text-red-700"
+                          onClick={() => handleDeleteHoliday(holiday.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <Button className="w-full" variant="outline">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Add Holiday
-                </Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -346,15 +522,15 @@ const LeaveManagement = () => {
                     <div className="space-y-3">
                       <div className="flex justify-between p-3 bg-gray-50 rounded">
                         <span>Pending Requests</span>
-                        <span className="font-medium text-yellow-600">8</span>
+                        <span className="font-medium text-yellow-600">{pendingRequests}</span>
                       </div>
                       <div className="flex justify-between p-3 bg-gray-50 rounded">
                         <span>Approved This Month</span>
-                        <span className="font-medium text-green-600">24</span>
+                        <span className="font-medium text-green-600">{approvedThisMonth}</span>
                       </div>
                       <div className="flex justify-between p-3 bg-gray-50 rounded">
-                        <span>Average Leave Days</span>
-                        <span className="font-medium text-blue-600">18.5</span>
+                        <span>Total Leave Types</span>
+                        <span className="font-medium text-blue-600">{leaveTypes.length}</span>
                       </div>
                     </div>
                   </div>
@@ -364,6 +540,47 @@ const LeaveManagement = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Modals */}
+      <NewLeaveRequestModal
+        open={showNewRequestModal}
+        onClose={() => setShowNewRequestModal(false)}
+        onSubmit={addLeaveRequest}
+        leaveTypes={leaveTypes}
+        employees={employeeOptions}
+        getAvailableBalance={getAvailableBalance}
+      />
+
+      <LeaveApprovalModal
+        open={showApprovalModal}
+        onClose={() => {
+          setShowApprovalModal(false);
+          setSelectedRequest(null);
+        }}
+        request={selectedRequest}
+        onApprove={approveLeaveRequest}
+        onReject={rejectLeaveRequest}
+      />
+
+      <HolidayModal
+        open={showHolidayModal}
+        onClose={() => setShowHolidayModal(false)}
+        onSubmit={addHoliday}
+      />
+
+      <LeaveTypeModal
+        open={showLeaveTypeModal}
+        onClose={() => {
+          setShowLeaveTypeModal(false);
+          setEditingLeaveType(null);
+        }}
+        onSubmit={editingLeaveType ? 
+          (data) => updateLeaveType(editingLeaveType.id, data) : 
+          addLeaveType
+        }
+        leaveType={editingLeaveType}
+        isEdit={!!editingLeaveType}
+      />
     </div>
   );
 };
