@@ -74,7 +74,17 @@ const LeaveTypeModal = ({
   ];
 
   const handleSubmit = (data: LeaveTypeForm) => {
-    onSubmit(data);
+    // Ensure all required properties are present and properly typed
+    const leaveTypeData: Omit<LeaveType, 'id'> = {
+      name: data.name,
+      description: data.description,
+      maxDays: data.maxDays,
+      carryForward: data.carryForward,
+      requiresApproval: data.requiresApproval,
+      color: data.color
+    };
+    
+    onSubmit(leaveTypeData);
     if (!isEdit) {
       form.reset();
     }
