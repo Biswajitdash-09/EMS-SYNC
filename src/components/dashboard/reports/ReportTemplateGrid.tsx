@@ -12,6 +12,12 @@ interface ReportTemplateGridProps {
 }
 
 const ReportTemplateGrid = ({ templates, onGenerateReport }: ReportTemplateGridProps) => {
+  const handleGenerateClick = (templateId: number, event: React.MouseEvent) => {
+    event.preventDefault();
+    console.log('Generate report clicked for template:', templateId);
+    onGenerateReport(templateId);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -39,7 +45,7 @@ const ReportTemplateGrid = ({ templates, onGenerateReport }: ReportTemplateGridP
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => onGenerateReport(template.id)}
+                      onClick={(e) => handleGenerateClick(template.id, e)}
                       className="mt-2"
                     >
                       <Plus className="w-4 h-4 mr-1" />

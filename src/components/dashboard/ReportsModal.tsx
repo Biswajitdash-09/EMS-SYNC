@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
@@ -149,17 +148,25 @@ Report ID: SYS-${Date.now()}
   };
 
   const handleGenerateReport = (templateId: number) => {
+    console.log('Generating report for template ID:', templateId);
     const template = reportTemplates.find(t => t.id === templateId);
-    if (!template) return;
+    if (!template) {
+      console.error('Template not found for ID:', templateId);
+      return;
+    }
+
+    console.log('Found template:', template);
 
     // Check if template requires parameters
-    if (template.requiresDateRange && (!generateParams.dateFrom || !generateParams.dateTo)) {
+    if (template.requiresDateRange || template.requiresDepartment) {
+      console.log('Template requires parameters, showing form');
       setSelectedTemplate(templateId);
       setShowGenerateForm(true);
       return;
     }
 
-    // Generate report immediately
+    // Generate report immediately for templates that don't require parameters
+    console.log('Generating report immediately');
     const newReport: Report = {
       id: Date.now(),
       title: template.title,
@@ -188,7 +195,34 @@ Report ID: SYS-${Date.now()}
 
   const handleGenerateWithParams = () => {
     if (selectedTemplate) {
-      handleGenerateReport(selectedTemplate);
+      const template = reportTemplates.find(t => t.id === selectedTemplate);
+      if (!template) return;
+
+      const newReport: Report = {
+        id: Date.now(),
+        title: template.title,
+        description: template.description,
+        type: template.title,
+        date: new Date().toISOString().split('T')[0],
+        status: 'completed',
+        size: `${(Math.random() * 3 + 1).toFixed(1)} MB`,
+        category: template.category
+      };
+
+      setMyReports(prev => [newReport, ...prev]);
+      
+      toast({
+        title: "Report Generated",
+        description: `${template.title} has been generated successfully.`,
+      });
+
+      // Auto-download the generated report
+      setTimeout(() => {
+        const content = generateReportContent(template, generateParams);
+        const filename = `${template.title.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.txt`;
+        downloadReport(content, filename);
+      }, 500);
+
       setShowGenerateForm(false);
       setSelectedTemplate(null);
       setGenerateParams({
