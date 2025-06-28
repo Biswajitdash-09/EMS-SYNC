@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,7 @@ const EditTimeEntryModal = ({ isOpen, onClose, entry, onSave, onDelete }: EditTi
   });
 
   // Update form data when entry changes
-  useState(() => {
+  useEffect(() => {
     if (entry) {
       setFormData({
         clockIn: entry.clockIn || '',

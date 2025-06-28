@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Clock, Plus, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { Clock, Plus, CheckCircle, XCircle, AlertTriangle, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { OvertimeRequest } from '@/hooks/time-tracking/useTimeTrackingCore';
 
@@ -15,13 +14,15 @@ interface OvertimeTrackingProps {
   onApproveOvertime: (requestId: string) => void;
   onRejectOvertime: (requestId: string) => void;
   onAddOvertimeRequest: (request: Omit<OvertimeRequest, 'id' | 'status' | 'requestedAt'>) => void;
+  onDeleteOvertimeRequest: (requestId: string) => void;
 }
 
 const OvertimeTracking = ({ 
   overtimeRequests, 
   onApproveOvertime, 
   onRejectOvertime, 
-  onAddOvertimeRequest 
+  onAddOvertimeRequest,
+  onDeleteOvertimeRequest
 }: OvertimeTrackingProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -54,6 +55,12 @@ const OvertimeTracking = ({
     });
     
     setIsDialogOpen(false);
+  };
+
+  const handleDelete = (requestId: string) => {
+    if (window.confirm('Are you sure you want to delete this overtime request?')) {
+      onDeleteOvertimeRequest(requestId);
+    }
   };
 
   // Calculate statistics
@@ -240,28 +247,39 @@ const OvertimeTracking = ({
                     </div>
                   </div>
                   
-                  {request.status === 'pending' && (
-                    <div className="flex gap-2 ml-4">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="text-green-600 border-green-200 hover:bg-green-50"
-                        onClick={() => onApproveOvertime(request.id)}
-                      >
-                        <CheckCircle className="w-4 h-4 mr-1" />
-                        Approve
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="text-red-600 border-red-200 hover:bg-red-50"
-                        onClick={() => onRejectOvertime(request.id)}
-                      >
-                        <XCircle className="w-4 h-4 mr-1" />
-                        Reject
-                      </Button>
-                    </div>
-                  )}
+                  <div className="flex gap-2 ml-4">
+                    {request.status === 'pending' && (
+                      <>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="text-green-600 border-green-200 hover:bg-green-50"
+                          onClick={() => onApproveOvertime(request.id)}
+                        >
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Approve
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="text-red-600 border-red-200 hover:bg-red-50"
+                          onClick={() => onRejectOvertime(request.id)}
+                        >
+                          <XCircle className="w-4 h-4 mr-1" />
+                          Reject
+                        </Button>
+                      </>
+                    )}
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="text-red-600 border-red-200 hover:bg-red-50"
+                      onClick={() => handleDelete(request.id)}
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
