@@ -4,7 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, Calendar, MessageSquare, TrendingUp, Plus, Trash2, Edit, CheckCircle, Star, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { usePerformanceData, PerformanceData, Goal, Review, Feedback } from '@/hooks/usePerformanceData';
+import { usePerformanceData, Goal, Review, Feedback } from '@/hooks/usePerformanceData';
+import { PerformanceData } from '@/hooks/performance/usePerformanceCore';
 import ScheduleReviewModal from '@/components/performance/ScheduleReviewModal';
 import PerformanceStatsCards from '@/components/performance/PerformanceStatsCards';
 import PerformanceTable from '@/components/performance/PerformanceTable';
@@ -112,9 +113,9 @@ const PerformanceAnalytics = () => {
     });
   };
 
-  const completeReview = (reviewId: string, score: number, comments: string) => {
-    completeReview(reviewId, score, comments)
-  }
+  const handleCompleteReview = (reviewId: string, score: number, comments: string) => {
+    completeReview(reviewId, score, comments);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -221,7 +222,7 @@ const PerformanceAnalytics = () => {
                             <Button 
                               size="sm"
                               variant="outline"
-                              onClick={() => completeReview(review.id, 4.2, 'Review completed')}
+                              onClick={() => handleCompleteReview(review.id, 4.2, 'Review completed')}
                             >
                               <CheckCircle className="w-4 h-4 mr-1" />
                               Complete
