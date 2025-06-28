@@ -150,6 +150,7 @@ const CompanySettings = ({ initialData }: CompanySettingsProps) => {
                   <SelectItem value="UTC-5">UTC-5 (Eastern Time)</SelectItem>
                   <SelectItem value="UTC+0">UTC+0 (GMT)</SelectItem>
                   <SelectItem value="UTC+1">UTC+1 (CET)</SelectItem>
+                  <SelectItem value="UTC+5:30">UTC+5:30 (IST - Indian Standard Time)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -165,6 +166,7 @@ const CompanySettings = ({ initialData }: CompanySettingsProps) => {
                   <SelectItem value="GBP">GBP (£)</SelectItem>
                   <SelectItem value="CAD">CAD (C$)</SelectItem>
                   <SelectItem value="AUD">AUD (A$)</SelectItem>
+                  <SelectItem value="INR">INR (₹)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
