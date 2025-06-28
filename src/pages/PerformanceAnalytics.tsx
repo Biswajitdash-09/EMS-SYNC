@@ -1,20 +1,41 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
-import { BarChart3, Target, Star, Calendar, MessageSquare, TrendingUp, Plus, Trash2, Edit, CheckCircle } from 'lucide-react';
+import { BarChart3, Calendar, MessageSquare, TrendingUp, Plus, Trash2, Edit, CheckCircle, Star, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { usePerformanceData } from '@/hooks/usePerformanceData';
-import ScheduleReviewModal from '@/components/performance/ScheduleReviewModal';
 import { useToast } from '@/hooks/use-toast';
+import { usePerformanceData, PerformanceData, Goal, Review, Feedback } from '@/hooks/usePerformanceData';
+import ScheduleReviewModal from '@/components/performance/ScheduleReviewModal';
+import PerformanceStatsCards from '@/components/performance/PerformanceStatsCards';
+import PerformanceTable from '@/components/performance/PerformanceTable';
+import GoalsSection from '@/components/performance/GoalsSection';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 const PerformanceAnalytics = () => {
   const navigate = useNavigate();
@@ -36,13 +57,6 @@ const PerformanceAnalytics = () => {
   } = usePerformanceData();
 
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
-  const [newGoal, setNewGoal] = useState({
-    employeeId: 'perf1',
-    title: '',
-    description: '',
-    deadline: '',
-    category: 'Technical Skills'
-  });
   const [newFeedback, setNewFeedback] = useState({
     fromEmployee: 'Manager',
     toEmployee: '',
@@ -63,35 +77,6 @@ const PerformanceAnalytics = () => {
       case 'In Progress': return 'bg-blue-100 text-blue-800';
       default: return 'bg-gray-100 text-gray-800';
     }
-  };
-
-  const handleCreateGoal = () => {
-    if (newGoal.title && newGoal.deadline) {
-      addGoal({
-        ...newGoal,
-        progress: 0,
-        status: 'Active'
-      });
-      setNewGoal({
-        employeeId: 'perf1',
-        title: '',
-        description: '',
-        deadline: '',
-        category: 'Technical Skills'
-      });
-      toast({
-        title: "Goal Created",
-        description: "New performance goal has been created successfully.",
-      });
-    }
-  };
-
-  const handleGoalProgressUpdate = (goalId: string, progress: number) => {
-    updateGoalProgress(goalId, progress);
-    toast({
-      title: "Progress Updated",
-      description: "Goal progress has been updated successfully.",
-    });
   };
 
   const handleStartReview = (reviewId: string) => {
@@ -126,6 +111,10 @@ const PerformanceAnalytics = () => {
       description: "Performance review has been scheduled successfully.",
     });
   };
+
+  const completeReview = (reviewId: string, score: number, comments: string) => {
+    completeReview(reviewId, score, comments)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -164,208 +153,17 @@ const PerformanceAnalytics = () => {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            {/* Performance Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Average Score</CardTitle>
-                  <Star className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.averageScore.toFixed(1)}</div>
-                  <p className="text-xs text-muted-foreground">Out of 5.0</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Goals Completed</CardTitle>
-                  <Target className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.goalCompletionRate.toFixed(0)}%</div>
-                  <p className="text-xs text-muted-foreground">This quarter</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Reviews Due</CardTitle>
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.pendingReviews}</div>
-                  <p className="text-xs text-muted-foreground">This month</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Top Performers</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.topPerformers}</div>
-                  <p className="text-xs text-muted-foreground">Above 4.5 rating</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Performance Table */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Employee Performance Monitoring</CardTitle>
-                <CardDescription>Track individual and team performance metrics</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Employee</TableHead>
-                      <TableHead>Department</TableHead>
-                      <TableHead>Current Score</TableHead>
-                      <TableHead>Goal Progress</TableHead>
-                      <TableHead>Last Review</TableHead>
-                      <TableHead>Next Review</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {performanceData.map((employee) => (
-                      <TableRow key={employee.id}>
-                        <TableCell className="font-medium">{employee.employee}</TableCell>
-                        <TableCell>{employee.department}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Star className="w-4 h-4 text-yellow-500" />
-                            <span>{employee.currentScore}/5.0</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Progress value={employee.goalProgress} className="w-20" />
-                            <span className="text-sm">{employee.goalProgress}%</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>{employee.lastReview}</TableCell>
-                        <TableCell>{employee.nextReview}</TableCell>
-                        <TableCell>
-                          <Badge className={getStatusColor(employee.status)}>
-                            {employee.status}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            <PerformanceStatsCards {...stats} />
+            <PerformanceTable data={performanceData} />
           </TabsContent>
 
           <TabsContent value="goals" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="w-5 h-5" />
-                  KPIs and Goals Tracking
-                </CardTitle>
-                <CardDescription>Set and monitor employee goals and key performance indicators</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h4 className="font-semibold">Create New Goal</h4>
-                    <div className="space-y-3">
-                      <div>
-                        <Label htmlFor="goalTitle">Goal Title *</Label>
-                        <Input 
-                          id="goalTitle" 
-                          placeholder="Enter goal title"
-                          value={newGoal.title}
-                          onChange={(e) => setNewGoal(prev => ({ ...prev, title: e.target.value }))}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="goalDescription">Description</Label>
-                        <Textarea 
-                          id="goalDescription" 
-                          placeholder="Goal description"
-                          value={newGoal.description}
-                          onChange={(e) => setNewGoal(prev => ({ ...prev, description: e.target.value }))}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="deadline">Deadline *</Label>
-                        <Input 
-                          id="deadline" 
-                          type="date"
-                          value={newGoal.deadline}
-                          onChange={(e) => setNewGoal(prev => ({ ...prev, deadline: e.target.value }))}
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="category">Category</Label>
-                        <Select value={newGoal.category} onValueChange={(value) => 
-                          setNewGoal(prev => ({ ...prev, category: value }))
-                        }>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Technical Skills">Technical Skills</SelectItem>
-                            <SelectItem value="Leadership">Leadership</SelectItem>
-                            <SelectItem value="Quality">Quality</SelectItem>
-                            <SelectItem value="Communication">Communication</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <Button onClick={handleCreateGoal} className="w-full">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Create Goal
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <h4 className="font-semibold">Active Goals</h4>
-                    <div className="space-y-3 max-h-96 overflow-y-auto">
-                      {goals.map((goal) => (
-                        <div key={goal.id} className="p-4 border rounded-lg">
-                          <div className="flex justify-between items-start mb-2">
-                            <div className="flex-1">
-                              <h5 className="font-medium">{goal.title}</h5>
-                              <p className="text-sm text-gray-600 mb-2">{goal.description}</p>
-                            </div>
-                            <div className="flex gap-1">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => handleGoalProgressUpdate(goal.id, Math.min(100, goal.progress + 10))}
-                              >
-                                <Plus className="w-3 h-3" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => deleteGoal(goal.id)}
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <Progress value={goal.progress} className="flex-1" />
-                            <span className="text-sm font-medium">{goal.progress}%</span>
-                          </div>
-                          <div className="flex justify-between items-center text-sm">
-                            <span className="text-gray-600">Due: {goal.deadline}</span>
-                            <Badge className={getStatusColor(goal.status)}>
-                              {goal.status}
-                            </Badge>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <GoalsSection 
+              goals={goals}
+              onCreateGoal={addGoal}
+              onUpdateProgress={updateGoalProgress}
+              onDeleteGoal={deleteGoal}
+            />
           </TabsContent>
 
           <TabsContent value="reviews" className="space-y-6">

@@ -1,18 +1,5 @@
-
 import { useState, useMemo } from 'react';
-
-export interface PerformanceData {
-  id: string;
-  employee: string;
-  department: string;
-  currentScore: number;
-  goalProgress: number;
-  lastReview: string;
-  nextReview: string;
-  status: 'Exceeding' | 'On Track' | 'Needs Improvement';
-  manager: string;
-  position: string;
-}
+import { usePerformanceCore } from './performance/usePerformanceCore';
 
 export interface Goal {
   id: string;
@@ -57,45 +44,6 @@ export interface PerformanceHistory {
   completedDate: string;
   reviewType: string;
 }
-
-const initialPerformanceData: PerformanceData[] = [
-  {
-    id: 'perf1',
-    employee: 'John Smith',
-    department: 'Engineering',
-    currentScore: 4.2,
-    goalProgress: 85,
-    lastReview: '2024-03-15',
-    nextReview: '2024-09-15',
-    status: 'On Track',
-    manager: 'Alice Johnson',
-    position: 'Senior Developer'
-  },
-  {
-    id: 'perf2',
-    employee: 'Sarah Johnson',
-    department: 'HR',
-    currentScore: 4.7,
-    goalProgress: 92,
-    lastReview: '2024-02-20',
-    nextReview: '2024-08-20',
-    status: 'Exceeding',
-    manager: 'CEO',
-    position: 'HR Manager'
-  },
-  {
-    id: 'perf3',
-    employee: 'Mike Chen',
-    department: 'Finance',
-    currentScore: 3.8,
-    goalProgress: 70,
-    lastReview: '2024-04-10',
-    nextReview: '2024-10-10',
-    status: 'Needs Improvement',
-    manager: 'Robert Davis',
-    position: 'Financial Analyst'
-  }
-];
 
 const initialGoals: Goal[] = [
   {
@@ -203,18 +151,11 @@ const initialHistory: PerformanceHistory[] = [
 ];
 
 export const usePerformanceData = () => {
-  const [performanceData, setPerformanceData] = useState<PerformanceData[]>(initialPerformanceData);
+  const { performanceData, updatePerformanceScore } = usePerformanceCore();
   const [goals, setGoals] = useState<Goal[]>(initialGoals);
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
   const [feedback, setFeedback] = useState<Feedback[]>(initialFeedback);
   const [history, setHistory] = useState<PerformanceHistory[]>(initialHistory);
-
-  // Performance data operations
-  const updatePerformanceScore = (employeeId: string, score: number) => {
-    setPerformanceData(prev => prev.map(perf => 
-      perf.id === employeeId ? { ...perf, currentScore: score } : perf
-    ));
-  };
 
   // Goal operations
   const addGoal = (goal: Omit<Goal, 'id' | 'createdDate'>) => {
