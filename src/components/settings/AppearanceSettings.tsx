@@ -6,33 +6,84 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Palette } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from '@/components/ThemeProvider';
 
 interface AppearanceSettingsProps {
-  initialDarkMode?: boolean;
   initialColorScheme?: string;
 }
 
 const AppearanceSettings = ({ 
-  initialDarkMode = false,
   initialColorScheme = 'blue'
 }: AppearanceSettingsProps) => {
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   
   // Appearance Settings State
-  const [darkMode, setDarkMode] = useState(initialDarkMode);
   const [selectedColorScheme, setSelectedColorScheme] = useState(initialColorScheme);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [faviconFile, setFaviconFile] = useState<File | null>(null);
 
-  // Appearance Handlers
+  // Check if dark mode is currently active
+  const isDarkMode = theme === 'dark';
+
+  // Dark Mode Handler
+  const handleDarkModeToggle = (checked: boolean) => {
+    const newTheme = checked ? 'dark' : 'light';
+    setTheme(newTheme);
+    toast({
+      title: "Theme Updated",
+      description: `Switched to ${checked ? 'dark' : 'light'} mode.`,
+    });
+  };
+
+  // Color Scheme Handler
   const handleColorSchemeChange = (color: string) => {
     setSelectedColorScheme(color);
+    
+    // Apply color scheme to CSS variables
+    const root = document.documentElement;
+    const colorSchemes = {
+      blue: {
+        primary: '222.2 47.4% 11.2%',
+        primaryForeground: '210 40% 98%',
+        accent: '210 40% 96.1%',
+        accentForeground: '222.2 47.4% 11.2%'
+      },
+      green: {
+        primary: '142 76% 36%',
+        primaryForeground: '355 100% 97%',
+        accent: '142 76% 96%',
+        accentForeground: '142 76% 36%'
+      },
+      purple: {
+        primary: '262 83% 58%',
+        primaryForeground: '210 40% 98%',
+        accent: '262 83% 96%',
+        accentForeground: '262 83% 58%'
+      },
+      orange: {
+        primary: '25 95% 53%',
+        primaryForeground: '210 40% 98%',
+        accent: '25 95% 96%',
+        accentForeground: '25 95% 53%'
+      }
+    };
+
+    const scheme = colorSchemes[color as keyof typeof colorSchemes];
+    if (scheme) {
+      root.style.setProperty('--primary', scheme.primary);
+      root.style.setProperty('--primary-foreground', scheme.primaryForeground);
+      root.style.setProperty('--accent', scheme.accent);
+      root.style.setProperty('--accent-foreground', scheme.accentForeground);
+    }
+
     toast({
       title: "Color Scheme Updated",
       description: `Color scheme changed to ${color}.`,
     });
   };
 
+  // File Upload Handler
   const handleFileUpload = (type: 'logo' | 'favicon', file: File | null) => {
     if (type === 'logo') setLogoFile(file);
     if (type === 'favicon') setFaviconFile(file);
@@ -59,11 +110,11 @@ const AppearanceSettings = ({
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-medium">Dark Mode</h4>
-              <p className="text-sm text-gray-600">Switch to dark theme</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Switch to dark theme</p>
             </div>
             <Switch 
-              checked={darkMode} 
-              onCheckedChange={setDarkMode}
+              checked={isDarkMode} 
+              onCheckedChange={handleDarkModeToggle}
             />
           </div>
         </div>
@@ -79,7 +130,7 @@ const AppearanceSettings = ({
             ].map((scheme) => (
               <div 
                 key={scheme.name}
-                className={`p-4 border rounded-lg text-center cursor-pointer hover:bg-gray-50 ${
+                className={`p-4 border rounded-lg text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
                   selectedColorScheme === scheme.name ? 'ring-2 ring-blue-500' : ''
                 }`}
                 onClick={() => handleColorSchemeChange(scheme.name)}

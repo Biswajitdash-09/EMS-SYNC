@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Download, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
+import { ThemeProvider } from '@/components/ThemeProvider';
 import CompanySettings from '@/components/settings/CompanySettings';
 import PermissionsSettings from '@/components/settings/PermissionsSettings';
 import NotificationsSettings from '@/components/settings/NotificationsSettings';
@@ -84,73 +85,75 @@ const SystemSettings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={() => navigate('/dashboard')}>
-                ← Back to Dashboard
-              </Button>
-              <div className="flex items-center space-x-2">
-                <Settings className="w-6 h-6 text-gray-600" />
-                <h1 className="text-xl font-bold text-gray-900">System Settings</h1>
+    <ThemeProvider defaultTheme="system" storageKey="empsync-ui-theme">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        {/* Header */}
+        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center space-x-4">
+                <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+                  ← Back to Dashboard
+                </Button>
+                <div className="flex items-center space-x-2">
+                  <Settings className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+                  <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">System Settings</h1>
+                </div>
               </div>
+              <Button 
+                className="bg-gray-600 hover:bg-gray-700" 
+                onClick={handleExportSettings}
+                disabled={isExporting}
+              >
+                {isExporting ? (
+                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4 mr-2" />
+                )}
+                {isExporting ? 'Exporting...' : 'Export Settings'}
+              </Button>
             </div>
-            <Button 
-              className="bg-gray-600 hover:bg-gray-700" 
-              onClick={handleExportSettings}
-              disabled={isExporting}
-            >
-              {isExporting ? (
-                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Download className="w-4 h-4 mr-2" />
-              )}
-              {isExporting ? 'Exporting...' : 'Export Settings'}
-            </Button>
           </div>
+        </header>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Tabs defaultValue="company" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-6">
+              <TabsTrigger value="company">Company</TabsTrigger>
+              <TabsTrigger value="permissions">Permissions</TabsTrigger>
+              <TabsTrigger value="notifications">Notifications</TabsTrigger>
+              <TabsTrigger value="integrations">Integrations</TabsTrigger>
+              <TabsTrigger value="appearance">Appearance</TabsTrigger>
+              <TabsTrigger value="backup">Backup</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="company" className="space-y-6">
+              <CompanySettings />
+            </TabsContent>
+
+            <TabsContent value="permissions" className="space-y-6">
+              <PermissionsSettings />
+            </TabsContent>
+
+            <TabsContent value="notifications" className="space-y-6">
+              <NotificationsSettings />
+            </TabsContent>
+
+            <TabsContent value="integrations" className="space-y-6">
+              <IntegrationsSettings />
+            </TabsContent>
+
+            <TabsContent value="appearance" className="space-y-6">
+              <AppearanceSettings />
+            </TabsContent>
+
+            <TabsContent value="backup" className="space-y-6">
+              <BackupSettings onExportSettings={handleExportSettings} />
+            </TabsContent>
+          </Tabs>
         </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Tabs defaultValue="company" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="company">Company</TabsTrigger>
-            <TabsTrigger value="permissions">Permissions</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="integrations">Integrations</TabsTrigger>
-            <TabsTrigger value="appearance">Appearance</TabsTrigger>
-            <TabsTrigger value="backup">Backup</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="company" className="space-y-6">
-            <CompanySettings />
-          </TabsContent>
-
-          <TabsContent value="permissions" className="space-y-6">
-            <PermissionsSettings />
-          </TabsContent>
-
-          <TabsContent value="notifications" className="space-y-6">
-            <NotificationsSettings />
-          </TabsContent>
-
-          <TabsContent value="integrations" className="space-y-6">
-            <IntegrationsSettings />
-          </TabsContent>
-
-          <TabsContent value="appearance" className="space-y-6">
-            <AppearanceSettings />
-          </TabsContent>
-
-          <TabsContent value="backup" className="space-y-6">
-            <BackupSettings onExportSettings={handleExportSettings} />
-          </TabsContent>
-        </Tabs>
       </div>
-    </div>
+    </ThemeProvider>
   );
 };
 
