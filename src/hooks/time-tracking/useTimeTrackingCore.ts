@@ -229,6 +229,27 @@ export const useTimeTrackingCore = () => {
     }
   };
 
+  // CRUD Operations for Time Entries
+  const updateTimeEntry = (updatedEntry: TimeEntry) => {
+    setTimeEntries(prev =>
+      prev.map(entry => entry.id === updatedEntry.id ? updatedEntry : entry)
+    );
+    
+    toast({
+      title: "Time Entry Updated",
+      description: "Time entry has been successfully updated",
+    });
+  };
+
+  const deleteTimeEntry = (entryId: string) => {
+    setTimeEntries(prev => prev.filter(entry => entry.id !== entryId));
+    
+    toast({
+      title: "Time Entry Deleted",
+      description: "Time entry has been successfully deleted",
+    });
+  };
+
   const addTimesheetEntry = (entry: Partial<TimeEntry>) => {
     const newEntry: TimeEntry = {
       id: Date.now().toString(),
@@ -252,6 +273,42 @@ export const useTimeTrackingCore = () => {
     });
   };
 
+  // CRUD Operations for Shifts
+  const addShift = (shiftData: Omit<ShiftSchedule, 'id'>) => {
+    const newShift: ShiftSchedule = {
+      ...shiftData,
+      id: Date.now().toString()
+    };
+
+    setShifts(prev => [newShift, ...prev]);
+    
+    toast({
+      title: "Shift Created",
+      description: "New shift has been successfully created",
+    });
+  };
+
+  const updateShift = (updatedShift: ShiftSchedule) => {
+    setShifts(prev =>
+      prev.map(shift => shift.id === updatedShift.id ? updatedShift : shift)
+    );
+    
+    toast({
+      title: "Shift Updated",
+      description: "Shift has been successfully updated",
+    });
+  };
+
+  const deleteShift = (shiftId: string) => {
+    setShifts(prev => prev.filter(shift => shift.id !== shiftId));
+    
+    toast({
+      title: "Shift Deleted",
+      description: "Shift has been successfully deleted",
+    });
+  };
+
+  // CRUD Operations for Overtime
   const approveOvertime = (requestId: string) => {
     setOvertimeRequests(prev =>
       prev.map(request =>
@@ -298,6 +355,15 @@ export const useTimeTrackingCore = () => {
     });
   };
 
+  const deleteOvertimeRequest = (requestId: string) => {
+    setOvertimeRequests(prev => prev.filter(request => request.id !== requestId));
+    
+    toast({
+      title: "Overtime Request Deleted",
+      description: "Overtime request has been successfully deleted",
+    });
+  };
+
   return {
     currentTime,
     isClocked,
@@ -308,10 +374,20 @@ export const useTimeTrackingCore = () => {
     overtimeRequests,
     attendanceStats,
     handleClockToggle,
+    // Time Entry CRUD
     addTimesheetEntry,
+    updateTimeEntry,
+    deleteTimeEntry,
+    // Shift CRUD
+    addShift,
+    updateShift,
+    deleteShift,
+    // Overtime CRUD
     approveOvertime,
     rejectOvertime,
     addOvertimeRequest,
+    deleteOvertimeRequest,
+    // Setters for backward compatibility
     setTimeEntries,
     setShifts,
     setOvertimeRequests

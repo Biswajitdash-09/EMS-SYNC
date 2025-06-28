@@ -24,10 +24,19 @@ const TimeTracking = () => {
     overtimeRequests,
     attendanceStats,
     handleClockToggle,
+    // Time Entry CRUD
     addTimesheetEntry,
+    updateTimeEntry,
+    deleteTimeEntry,
+    // Shift CRUD
+    addShift,
+    updateShift,
+    deleteShift,
+    // Overtime CRUD
     approveOvertime,
     rejectOvertime,
-    addOvertimeRequest
+    addOvertimeRequest,
+    deleteOvertimeRequest
   } = useTimeTrackingCore();
 
   const [currentTimeString, setCurrentTimeString] = useState('');
@@ -146,7 +155,8 @@ const TimeTracking = () => {
             <AttendanceStats stats={attendanceStats} />
             <AttendanceTable 
               timeEntries={timeEntries}
-              onEditEntry={(entry) => console.log('Edit entry:', entry)}
+              onEditEntry={updateTimeEntry}
+              onDeleteEntry={deleteTimeEntry}
               onViewDetails={(entry) => console.log('View details:', entry)}
             />
           </TabsContent>
@@ -159,7 +169,12 @@ const TimeTracking = () => {
           </TabsContent>
 
           <TabsContent value="shifts" className="space-y-6">
-            <ShiftManagement shifts={shifts} />
+            <ShiftManagement 
+              shifts={shifts}
+              onAddShift={addShift}
+              onUpdateShift={updateShift}
+              onDeleteShift={deleteShift}
+            />
           </TabsContent>
 
           <TabsContent value="overtime" className="space-y-6">
@@ -168,6 +183,7 @@ const TimeTracking = () => {
               onApproveOvertime={approveOvertime}
               onRejectOvertime={rejectOvertime}
               onAddOvertimeRequest={addOvertimeRequest}
+              onDeleteOvertimeRequest={deleteOvertimeRequest}
             />
           </TabsContent>
 
