@@ -2,6 +2,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Eye, Edit, Trash2 } from 'lucide-react';
 import { Employee } from '@/hooks/useEmployeeData';
 
@@ -37,6 +38,14 @@ const EmployeeTable = ({
     }
   };
 
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase();
+  };
+
   return (
     <div className="border rounded-lg">
       <Table>
@@ -62,9 +71,15 @@ const EmployeeTable = ({
             >
               <TableCell className="font-medium">{employee.id}</TableCell>
               <TableCell>
-                <div>
-                  <div className="font-medium">{employee.name}</div>
-                  <div className="text-sm text-gray-500">{employee.email}</div>
+                <div className="flex items-center space-x-3">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={employee.profilePicture} alt={employee.name} />
+                    <AvatarFallback>{getInitials(employee.name)}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="font-medium">{employee.name}</div>
+                    <div className="text-sm text-gray-500">{employee.email}</div>
+                  </div>
                 </div>
               </TableCell>
               <TableCell>{employee.department}</TableCell>
