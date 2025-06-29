@@ -1,277 +1,56 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
-import { UserPlus, DollarSign, Calendar, FileText, BarChart3, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { useToast } from "@/hooks/use-toast";
-import { useEmployeeData } from "@/hooks/useEmployeeData";
-import { useLeaveData } from "@/hooks/useLeaveData";
-import AddEmployeeForm from "@/components/quick-actions/AddEmployeeForm";
-import ProcessPayrollForm from "@/components/quick-actions/ProcessPayrollForm";
-import LeaveRequestsForm from "@/components/quick-actions/LeaveRequestsForm";
-import GenerateReportForm from "@/components/quick-actions/GenerateReportForm";
-import PerformanceReviewForm from "@/components/quick-actions/PerformanceReviewForm";
+import QuickActionsGrid from "@/components/quick-actions/QuickActionsGrid";
+import QuickActionFormRenderer from "@/components/quick-actions/QuickActionFormRenderer";
+import { useQuickActionForms } from "@/hooks/useQuickActionForms";
+import { useQuickActionHandlers } from "@/hooks/useQuickActionHandlers";
 
 const QuickActionsPage = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { addEmployee } = useEmployeeData();
-  const { approveLeaveRequest, rejectLeaveRequest } = useLeaveData();
   const [activeAction, setActiveAction] = useState<string | null>(null);
+  
+  // Custom hooks for form state and handlers
+  const {
+    employeeForm,
+    setEmployeeForm,
+    reportParams,
+    setReportParams,
+    reviewForm,
+    setReviewForm,
+    resetEmployeeForm,
+    resetReviewForm
+  } = useQuickActionForms();
 
-  // Form states for different actions
-  const [employeeForm, setEmployeeForm] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    department: '',
-    position: '',
-    startDate: '',
-    phone: '',
-    address: '',
-    baseSalary: ''
-  });
+  const {
+    handleAddEmployee,
+    handleProcessPayroll,
+    handleLeaveAction,
+    handleGenerateReport,
+    handleScheduleReview
+  } = useQuickActionHandlers();
 
-  const [reportParams, setReportParams] = useState({
-    reportType: 'Attendance Report',
-    dateRange: 'Last 30 Days',
-    format: 'PDF',
-    department: ''
-  });
-
-  const [reviewForm, setReviewForm] = useState({
-    employee: '',
-    reviewType: 'Annual Review',
-    reviewer: 'Direct Manager',
-    dueDate: '',
-    goals: ''
-  });
-
-  const quickActions = [
-    {
-      id: 'add-employee',
-      title: 'Add Employee',
-      description: 'Quickly onboard new team members',
-      icon: UserPlus,
-      color: 'blue',
-      action: () => setActiveAction('add-employee')
-    },
-    {
-      id: 'process-payroll',
-      title: 'Process Payroll',
-      description: 'Calculate and process monthly payroll',
-      icon: DollarSign,
-      color: 'green',
-      action: () => setActiveAction('process-payroll')
-    },
-    {
-      id: 'leave-requests',
-      title: 'Leave Requests',
-      description: 'Review pending leave applications',
-      icon: Calendar,
-      color: 'orange',
-      action: () => setActiveAction('leave-requests')
-    },
-    {
-      id: 'generate-report',
-      title: 'Generate Report',
-      description: 'Create comprehensive business reports',
-      icon: FileText,
-      color: 'purple',
-      action: () => setActiveAction('generate-report')
-    },
-    {
-      id: 'performance-review',
-      title: 'Performance Review',
-      description: 'Conduct employee performance evaluations',
-      icon: BarChart3,
-      color: 'red',
-      action: () => setActiveAction('performance-review')
-    }
-  ];
-
-  const handleAddEmployee = () => {
-    // Validate form
-    if (!employeeForm.firstName || !employeeForm.lastName || !employeeForm.email || !employeeForm.department) {
-      toast({
-        title: "Validation Error",
-        description: "Please fill in all required fields.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Create comprehensive employee object that matches the Employee interface
-    const currentDate = new Date().toISOString().split('T')[0];
-    const joinDate = employeeForm.startDate || currentDate;
-    const fullName = `${employeeForm.firstName} ${employeeForm.lastName}`;
-    
-    const newEmployee = {
-      name: fullName,
-      email: employeeForm.email,
-      phone: employeeForm.phone || `+1 ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
-      department: employeeForm.department,
-      role: employeeForm.position || 'Employee',
-      status: 'Active' as const,
-      joinDate: joinDate,
-      address: employeeForm.address || 'Address not provided',
-      dateOfBirth: '1990-01-01', // Default birth date, can be updated later
-      profilePicture: undefined, // No profile picture initially
-      emergencyContact: {
-        name: 'Not specified',
-        phone: 'Not specified',
-        relationship: 'Not specified'
-      },
-      manager: 'Not assigned',
-      baseSalary: parseInt(employeeForm.baseSalary) || 50000,
-      employmentHistory: [{
-        title: employeeForm.position || 'Employee',
-        department: employeeForm.department,
-        startDate: joinDate,
-        current: true
-      }],
-      documents: []
-    };
-
-    // Add employee to the main employee data store
-    addEmployee(newEmployee);
-    
-    toast({
-      title: "Employee Added Successfully",
-      description: `${fullName} has been added to the employee records and will appear on the Employee Records page.`,
-    });
-
-    // Reset form
-    setEmployeeForm({
-      firstName: '',
-      lastName: '',
-      email: '',
-      department: '',
-      position: '',
-      startDate: '',
-      phone: '',
-      address: '',
-      baseSalary: ''
-    });
-    setActiveAction(null);
-    
-    console.log('Employee added via Quick Actions:', newEmployee);
-  };
-
-  const handleProcessPayroll = () => {
-    toast({
-      title: "Payroll Processing Started",
-      description: "Payroll for the current period is being processed. You will be notified when complete.",
-    });
+  // Action handlers that include form reset and navigation
+  const onAddEmployee = () => {
+    handleAddEmployee(employeeForm, resetEmployeeForm);
     setActiveAction(null);
   };
 
-  const handleLeaveAction = (action: 'approve' | 'reject', requestId: string, employeeName: string) => {
-    if (action === 'approve') {
-      approveLeaveRequest(requestId, 'HR Manager', 'Approved via Quick Actions');
-      toast({
-        title: "Leave Request Approved",
-        description: `${employeeName}'s leave request has been approved.`,
-      });
-    } else {
-      rejectLeaveRequest(requestId, 'HR Manager', 'Rejected via Quick Actions - needs more information');
-      toast({
-        title: "Leave Request Rejected",
-        description: `${employeeName}'s leave request has been rejected.`,
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleGenerateReport = () => {
-    if (!reportParams.reportType) {
-      toast({
-        title: "Validation Error",
-        description: "Please select a report type.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    toast({
-      title: "Report Generation Started",
-      description: `${reportParams.reportType} is being generated. You will receive it shortly.`,
-    });
+  const onProcessPayroll = () => {
+    handleProcessPayroll();
     setActiveAction(null);
   };
 
-  const handleScheduleReview = () => {
-    if (!reviewForm.employee || !reviewForm.dueDate) {
-      toast({
-        title: "Validation Error",
-        description: "Please select an employee and due date.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    toast({
-      title: "Performance Review Scheduled",
-      description: `Performance review has been scheduled for ${reviewForm.employee}.`,
-    });
-
-    // Reset form
-    setReviewForm({
-      employee: '',
-      reviewType: 'Annual Review',
-      reviewer: 'Direct Manager',
-      dueDate: '',
-      goals: ''
-    });
+  const onGenerateReport = () => {
+    handleGenerateReport(reportParams);
     setActiveAction(null);
   };
 
-  const renderActionContent = () => {
-    switch (activeAction) {
-      case 'add-employee':
-        return (
-          <AddEmployeeForm
-            employeeForm={employeeForm}
-            onFormChange={setEmployeeForm}
-            onSubmit={handleAddEmployee}
-            onCancel={() => setActiveAction(null)}
-          />
-        );
-      case 'process-payroll':
-        return (
-          <ProcessPayrollForm
-            onSubmit={handleProcessPayroll}
-            onCancel={() => setActiveAction(null)}
-          />
-        );
-      case 'leave-requests':
-        return (
-          <LeaveRequestsForm
-            onLeaveAction={handleLeaveAction}
-            onCancel={() => setActiveAction(null)}
-          />
-        );
-      case 'generate-report':
-        return (
-          <GenerateReportForm
-            reportParams={reportParams}
-            onParamsChange={setReportParams}
-            onSubmit={handleGenerateReport}
-            onCancel={() => setActiveAction(null)}
-          />
-        );
-      case 'performance-review':
-        return (
-          <PerformanceReviewForm
-            reviewForm={reviewForm}
-            onFormChange={setReviewForm}
-            onSubmit={handleScheduleReview}
-            onCancel={() => setActiveAction(null)}
-          />
-        );
-      default:
-        return null;
-    }
+  const onScheduleReview = () => {
+    handleScheduleReview(reviewForm, resetReviewForm);
+    setActiveAction(null);
   };
 
   return (
@@ -294,39 +73,24 @@ const QuickActionsPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeAction ? (
           <div className="space-y-6">
-            {renderActionContent()}
+            <QuickActionFormRenderer
+              activeAction={activeAction}
+              employeeForm={employeeForm}
+              reportParams={reportParams}
+              reviewForm={reviewForm}
+              onEmployeeFormChange={setEmployeeForm}
+              onReportParamsChange={setReportParams}
+              onReviewFormChange={setReviewForm}
+              onAddEmployee={onAddEmployee}
+              onProcessPayroll={onProcessPayroll}
+              onLeaveAction={handleLeaveAction}
+              onGenerateReport={onGenerateReport}
+              onScheduleReview={onScheduleReview}
+              onCancel={() => setActiveAction(null)}
+            />
           </div>
         ) : (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Available Quick Actions</h2>
-              <p className="text-gray-600">Perform common HR tasks quickly and efficiently</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {quickActions.map((action) => {
-                const IconComponent = action.icon;
-                return (
-                  <Card key={action.id} className="hover:shadow-lg transition-shadow cursor-pointer">
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-3">
-                        <div className={`p-2 rounded-full bg-${action.color}-100`}>
-                          <IconComponent className={`w-6 h-6 text-${action.color}-600`} />
-                        </div>
-                        <span>{action.title}</span>
-                      </CardTitle>
-                      <CardDescription>{action.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button onClick={action.action} className="w-full">
-                        Start Action
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
+          <QuickActionsGrid onActionSelect={setActiveAction} />
         )}
       </div>
     </div>
