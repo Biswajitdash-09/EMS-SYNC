@@ -1,4 +1,10 @@
 
+/**
+ * Performance Table Component
+ * Displays detailed employee performance data in tabular format
+ * Shows scores, goal progress, review dates, and performance status
+ */
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +17,10 @@ interface PerformanceTableProps {
 }
 
 const PerformanceTable = ({ data }: PerformanceTableProps) => {
+  /**
+   * Determine badge color based on performance status
+   * Color coding for quick visual assessment
+   */
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Exceeding': return 'bg-green-100 text-green-800';
@@ -42,22 +52,33 @@ const PerformanceTable = ({ data }: PerformanceTableProps) => {
           <TableBody>
             {data.map((employee) => (
               <TableRow key={employee.id}>
+                {/* Employee identification */}
                 <TableCell className="font-medium">{employee.employee}</TableCell>
+                
+                {/* Department assignment */}
                 <TableCell>{employee.department}</TableCell>
+                
+                {/* Performance rating with star icon */}
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Star className="w-4 h-4 text-yellow-500" />
                     <span>{employee.currentScore}/5.0</span>
                   </div>
                 </TableCell>
+                
+                {/* Goal completion progress bar */}
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Progress value={employee.goalProgress} className="w-20" />
                     <span className="text-sm">{employee.goalProgress}%</span>
                   </div>
                 </TableCell>
+                
+                {/* Review scheduling dates */}
                 <TableCell>{employee.lastReview}</TableCell>
                 <TableCell>{employee.nextReview}</TableCell>
+                
+                {/* Performance status badge */}
                 <TableCell>
                   <Badge className={getStatusColor(employee.status)}>
                     {employee.status}

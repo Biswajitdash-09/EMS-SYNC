@@ -1,4 +1,10 @@
 
+/**
+ * Payroll Summary Cards Component
+ * Displays key payroll metrics in card format
+ * Shows totals, employee counts, deductions, and payment dates
+ */
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, Calculator, Calendar, Users } from 'lucide-react';
@@ -6,6 +12,7 @@ import { DollarSign, Calculator, Calendar, Users } from 'lucide-react';
 const PayrollSummaryCards = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      {/* Total payroll amount for current period */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Payroll</CardTitle>
@@ -16,6 +23,8 @@ const PayrollSummaryCards = () => {
           <p className="text-xs text-muted-foreground">This month</p>
         </CardContent>
       </Card>
+
+      {/* Employee payment status tracking */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Employees Paid</CardTitle>
@@ -26,6 +35,8 @@ const PayrollSummaryCards = () => {
           <p className="text-xs text-muted-foreground">3 pending</p>
         </CardContent>
       </Card>
+
+      {/* Tax and deduction calculations */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Tax Deductions</CardTitle>
@@ -36,6 +47,8 @@ const PayrollSummaryCards = () => {
           <p className="text-xs text-muted-foreground">Federal & State</p>
         </CardContent>
       </Card>
+
+      {/* Next payment schedule information */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Next Pay Date</CardTitle>

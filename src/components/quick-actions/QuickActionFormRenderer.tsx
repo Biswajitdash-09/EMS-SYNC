@@ -1,10 +1,17 @@
 
+/**
+ * Quick Action Form Renderer Component
+ * Dynamically renders different forms based on selected quick action
+ * Handles form delegation and action coordination
+ */
+
 import AddEmployeeForm from "./AddEmployeeForm";
 import ProcessPayrollForm from "./ProcessPayrollForm";
 import LeaveRequestsForm from "./LeaveRequestsForm";
 import GenerateReportForm from "./GenerateReportForm";
 import PerformanceReviewForm from "./PerformanceReviewForm";
 
+// Props interface for form renderer
 interface QuickActionFormRendererProps {
   activeAction: string;
   employeeForm: any;
@@ -36,7 +43,12 @@ const QuickActionFormRenderer = ({
   onScheduleReview,
   onCancel
 }: QuickActionFormRendererProps) => {
+  /**
+   * Form routing logic based on active action
+   * Each case renders the appropriate form component
+   */
   switch (activeAction) {
+    // Employee addition form
     case 'add-employee':
       return (
         <AddEmployeeForm
@@ -46,6 +58,8 @@ const QuickActionFormRenderer = ({
           onCancel={onCancel}
         />
       );
+    
+    // Payroll processing form
     case 'process-payroll':
       return (
         <ProcessPayrollForm
@@ -53,6 +67,8 @@ const QuickActionFormRenderer = ({
           onCancel={onCancel}
         />
       );
+    
+    // Leave request management form
     case 'leave-requests':
       return (
         <LeaveRequestsForm
@@ -60,6 +76,8 @@ const QuickActionFormRenderer = ({
           onCancel={onCancel}
         />
       );
+    
+    // Report generation form
     case 'generate-report':
       return (
         <GenerateReportForm
@@ -69,6 +87,8 @@ const QuickActionFormRenderer = ({
           onCancel={onCancel}
         />
       );
+    
+    // Performance review scheduling form
     case 'performance-review':
       return (
         <PerformanceReviewForm
@@ -78,6 +98,8 @@ const QuickActionFormRenderer = ({
           onCancel={onCancel}
         />
       );
+    
+    // Default case - no form selected
     default:
       return null;
   }

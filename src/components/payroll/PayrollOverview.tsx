@@ -1,8 +1,15 @@
 
+/**
+ * Payroll Overview Component
+ * Displays payroll summary and employee payment status
+ * Main interface for payroll management and monitoring
+ */
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import PayrollSummaryCards from './PayrollSummaryCards';
 import PayrollTable from './PayrollTable';
 
+// Interface for payroll employee data structure
 interface PayrollEmployee {
   id: string;
   name: string;
@@ -20,10 +27,10 @@ interface PayrollOverviewProps {
 const PayrollOverview = ({ payrollData }: PayrollOverviewProps) => {
   return (
     <div className="space-y-6">
-      {/* Payroll Summary */}
+      {/* High-level payroll statistics */}
       <PayrollSummaryCards />
 
-      {/* Payroll Table */}
+      {/* Detailed payroll data table */}
       <Card>
         <CardHeader>
           <CardTitle>Current Payroll Period</CardTitle>

@@ -1,4 +1,10 @@
 
+/**
+ * Payroll History Component
+ * Displays historical payroll data and provides report download functionality
+ * Tracks past payroll periods with processing dates and totals
+ */
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Download } from 'lucide-react';
@@ -7,6 +13,10 @@ import { useToast } from "@/hooks/use-toast";
 const PayrollHistory = () => {
   const { toast } = useToast();
 
+  /**
+   * Generate PDF content for payroll reports
+   * Creates downloadable report with payroll summary data
+   */
   const generatePDFContent = (reportName: string) => {
     const content = `
       PAYROLL REPORT - ${reportName}
@@ -22,10 +32,15 @@ const PayrollHistory = () => {
       employee payroll information and calculations.
     `;
     
+    // Create downloadable blob from content
     const blob = new Blob([content], { type: 'text/plain' });
     return URL.createObjectURL(blob);
   };
 
+  /**
+   * Handle report download functionality
+   * Generates and downloads payroll report files
+   */
   const handleDownloadHistoryReport = (reportName: string) => {
     try {
       const pdfUrl = generatePDFContent(reportName);
@@ -37,11 +52,13 @@ const PayrollHistory = () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(pdfUrl);
       
+      // Success notification
       toast({
         title: "Report Downloaded",
         description: `${reportName} has been downloaded successfully.`,
       });
     } catch (error) {
+      // Error handling
       toast({
         title: "Download Failed",
         description: "Unable to download the report. Please try again.",
@@ -50,6 +67,7 @@ const PayrollHistory = () => {
     }
   };
 
+  // Historical payroll data for display
   const historyData = [
     {
       period: "May 2024 Payroll",
@@ -79,17 +97,23 @@ const PayrollHistory = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
+          {/* Render each historical payroll record */}
           {historyData.map((record, index) => (
             <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+              {/* Payroll period information */}
               <div>
                 <h4 className="font-medium">{record.period}</h4>
                 <p className="text-sm text-gray-600">Processed on {record.processedDate}</p>
               </div>
+              
+              {/* Payroll totals and download action */}
               <div className="flex items-center space-x-4">
                 <div className="text-right">
                   <p className="font-medium">{record.totalAmount}</p>
                   <p className="text-sm text-gray-600">{record.employeeCount}</p>
                 </div>
+                
+                {/* Download report button */}
                 <Button 
                   variant="outline" 
                   size="sm"

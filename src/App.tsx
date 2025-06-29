@@ -1,4 +1,10 @@
 
+/**
+ * Main Application Component
+ * Sets up routing, theme provider, and global UI components
+ * Configures React Query for data fetching and state management
+ */
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,19 +24,32 @@ import ReportsAnalytics from "./pages/ReportsAnalytics";
 import SystemSettings from "./pages/SystemSettings";
 import NotFound from "./pages/NotFound";
 
+// Configure React Query client for data fetching
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    {/* Theme management (dark/light mode) */}
     <ThemeProvider defaultTheme="system" storageKey="lovable-ui-theme">
+      {/* Tooltip accessibility provider */}
       <TooltipProvider>
+        {/* Toast notification systems */}
         <Toaster />
         <Sonner />
+        
+        {/* Application routing setup */}
         <BrowserRouter>
           <Routes>
+            {/* Landing page */}
             <Route path="/" element={<Index />} />
+            
+            {/* Main dashboard */}
             <Route path="/dashboard" element={<Dashboard />} />
+            
+            {/* Quick actions interface */}
             <Route path="/quick-actions" element={<QuickActionsPage />} />
+            
+            {/* HR Management modules */}
             <Route path="/employees" element={<EmployeeRecords />} />
             <Route path="/hr" element={<HRManagement />} />
             <Route path="/payroll" element={<PayrollSystem />} />
@@ -39,7 +58,8 @@ const App = () => (
             <Route path="/time-tracking" element={<TimeTracking />} />
             <Route path="/reports" element={<ReportsAnalytics />} />
             <Route path="/settings" element={<SystemSettings />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            
+            {/* 404 fallback route - must be last */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

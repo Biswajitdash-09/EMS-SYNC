@@ -1,4 +1,10 @@
 
+/**
+ * Add Employee Modal Component
+ * Modal form for adding new employees to the system
+ * Handles comprehensive employee data collection including personal details and emergency contacts
+ */
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -13,8 +19,13 @@ interface AddEmployeeModalProps {
 }
 
 const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
+  // Modal visibility state
   const [open, setOpen] = useState(false);
+  
+  // Profile picture upload state
   const [profilePicture, setProfilePicture] = useState<string>('');
+  
+  // Employee form data state
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -32,9 +43,14 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
     baseSalary: 0
   });
 
+  /**
+   * Handle form submission
+   * Validates and processes new employee data
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Construct complete employee object
     const newEmployee: Omit<Employee, 'id'> = {
       name: formData.name,
       email: formData.email,
@@ -53,19 +69,22 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
       },
       manager: formData.manager,
       baseSalary: formData.baseSalary,
+      // Initialize employment history with current role
       employmentHistory: [{
         title: formData.role,
         department: formData.department,
         startDate: formData.joinDate,
         current: true
       }],
+      // Initialize empty documents array
       documents: []
     };
 
+    // Submit employee data
     onAddEmployee(newEmployee);
     setOpen(false);
     
-    // Reset form
+    // Reset form to initial state
     setFormData({
       name: '',
       email: '',
@@ -87,12 +106,15 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
+      {/* Modal trigger button */}
       <DialogTrigger asChild>
         <Button className="bg-blue-600 hover:bg-blue-700">
           <UserPlus className="w-4 h-4 mr-2" />
           Add Employee
         </Button>
       </DialogTrigger>
+      
+      {/* Modal content */}
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Employee</DialogTitle>
@@ -101,23 +123,28 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
           </DialogDescription>
         </DialogHeader>
         
+        {/* Employee form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Profile picture upload section */}
           <ProfilePictureUpload
             profilePicture={profilePicture}
             setProfilePicture={setProfilePicture}
             employeeName={formData.name}
           />
 
+          {/* Basic employee information fields */}
           <EmployeeFormFields
             formData={formData}
             setFormData={setFormData}
           />
           
+          {/* Emergency contact information fields */}
           <EmergencyContactFields
             formData={formData}
             setFormData={setFormData}
           />
 
+          {/* Form action buttons */}
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancel

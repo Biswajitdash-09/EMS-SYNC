@@ -1,4 +1,10 @@
 
+/**
+ * Dashboard Header Component
+ * Top navigation bar with search, notifications, and user actions
+ * Includes AI chatbot integration and theme toggle
+ */
+
 import { Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -10,24 +16,27 @@ import DashboardHeaderNotifications from './DashboardHeaderNotifications';
 import DashboardHeaderProfile from './DashboardHeaderProfile';
 
 const DashboardHeader = () => {
+  // Control AI chatbot modal visibility
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
   return (
     <>
+      {/* Main header navigation */}
       <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo and Title */}
+            {/* Company logo and branding */}
             <DashboardHeaderLogo />
 
-            {/* Search and Actions */}
+            {/* Right side navigation tools */}
             <div className="flex items-center space-x-4">
-              {/* Search */}
+              {/* Global search functionality */}
               <DashboardHeaderSearch />
               
+              {/* Dark/light mode toggle */}
               <ThemeToggle />
 
-              {/* AI Chatbot Button */}
+              {/* AI Assistant access button */}
               <Button
                 variant="outline"
                 size="icon"
@@ -37,17 +46,17 @@ const DashboardHeader = () => {
                 <Bot className="w-4 h-4 text-white" />
               </Button>
               
-              {/* Notifications */}
+              {/* System notifications */}
               <DashboardHeaderNotifications />
 
-              {/* Profile Menu */}
+              {/* User profile menu */}
               <DashboardHeaderProfile />
             </div>
           </div>
         </div>
       </header>
 
-      {/* AI Chatbot Fullscreen Modal */}
+      {/* AI Chatbot Modal Overlay */}
       <AIChatbot isOpen={isChatbotOpen} onClose={() => setIsChatbotOpen(false)} />
     </>
   );
