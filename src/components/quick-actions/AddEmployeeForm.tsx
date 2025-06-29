@@ -165,7 +165,7 @@ const AddEmployeeForm = ({
         </div>
         
         <div className="flex gap-2">
-          <Button onClick={handleSubmit} disabled={!isFormValid() || !isValidEmail() || isDuplicateEmail()} className="bg-yellow-500 hover:bg-yellow-400">
+          <Button onClick={handleSubmit} disabled={!isFormValid() || !isValidEmail() || isDuplicateEmail()} className="bg-violet-950 hover:bg-violet-800">
             Add Employee to Records
           </Button>
           <Button variant="outline" onClick={onCancel}>Cancel</Button>
