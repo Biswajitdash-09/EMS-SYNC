@@ -116,7 +116,7 @@ const AddEmployeeForm = ({
             phone: e.target.value
           }))} placeholder="Enter phone number" />
           </div>
-          <div>
+          <div className="bg-lime-500">
             <Label htmlFor="department">Department *</Label>
             <select id="department" value={employeeForm.department} onChange={e => onFormChange(prev => ({
             ...prev,
