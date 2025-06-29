@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserPlus, DollarSign, Calendar, FileText, BarChart3, ArrowLeft } from 'lucide-react';
@@ -102,17 +101,22 @@ const QuickActionsPage = () => {
       return;
     }
 
-    // Create employee object
+    // Create comprehensive employee object that matches the Employee interface
+    const currentDate = new Date().toISOString().split('T')[0];
+    const joinDate = employeeForm.startDate || currentDate;
+    const fullName = `${employeeForm.firstName} ${employeeForm.lastName}`;
+    
     const newEmployee = {
-      name: `${employeeForm.firstName} ${employeeForm.lastName}`,
+      name: fullName,
       email: employeeForm.email,
-      phone: employeeForm.phone || '+1 234-567-8900',
+      phone: employeeForm.phone || `+1 ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
       department: employeeForm.department,
       role: employeeForm.position || 'Employee',
       status: 'Active' as const,
-      joinDate: employeeForm.startDate || new Date().toISOString().split('T')[0],
-      address: employeeForm.address || 'Not specified',
-      dateOfBirth: '1990-01-01',
+      joinDate: joinDate,
+      address: employeeForm.address || 'Address not provided',
+      dateOfBirth: '1990-01-01', // Default birth date, can be updated later
+      profilePicture: undefined, // No profile picture initially
       emergencyContact: {
         name: 'Not specified',
         phone: 'Not specified',
@@ -123,17 +127,18 @@ const QuickActionsPage = () => {
       employmentHistory: [{
         title: employeeForm.position || 'Employee',
         department: employeeForm.department,
-        startDate: employeeForm.startDate || new Date().toISOString().split('T')[0],
+        startDate: joinDate,
         current: true
       }],
       documents: []
     };
 
+    // Add employee to the main employee data store
     addEmployee(newEmployee);
     
     toast({
-      title: "Employee Added",
-      description: `${newEmployee.name} has been successfully added to the system.`,
+      title: "Employee Added Successfully",
+      description: `${fullName} has been added to the employee records and will appear on the Employee Records page.`,
     });
 
     // Reset form
@@ -149,6 +154,8 @@ const QuickActionsPage = () => {
       baseSalary: ''
     });
     setActiveAction(null);
+    
+    console.log('Employee added via Quick Actions:', newEmployee);
   };
 
   const handleProcessPayroll = () => {
