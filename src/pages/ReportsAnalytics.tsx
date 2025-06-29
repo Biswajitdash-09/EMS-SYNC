@@ -12,11 +12,12 @@ import { useToast } from "@/hooks/use-toast";
 import ReportsSection from '@/components/time-tracking/ReportsSection';
 import PayrollOverview from '@/components/payroll/PayrollOverview';
 import TaxReports from '@/components/payroll/TaxReports';
-
 const ReportsAnalytics = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  
+  const {
+    toast
+  } = useToast();
+
   // Enhanced state management
   const [selectedDateRange, setSelectedDateRange] = useState('thisMonth');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
@@ -29,92 +30,114 @@ const ReportsAnalytics = () => {
   });
 
   // Enhanced mock data
-  const metrics = [
-    { 
-      title: 'Total Employees', 
-      value: '1,248', 
-      change: '+12', 
-      trend: 'up', 
-      icon: Users,
-      description: 'Active employees in system'
-    },
-    { 
-      title: 'Avg. Attendance Rate', 
-      value: '94.5%', 
-      change: '+2.1%', 
-      trend: 'up', 
-      icon: Calendar,
-      description: 'Monthly attendance average'
-    },
-    { 
-      title: 'Monthly Payroll', 
-      value: '$2.4M', 
-      change: '+5.2%', 
-      trend: 'up', 
-      icon: DollarSign,
-      description: 'Total payroll expenses'
-    },
-    { 
-      title: 'Avg. Performance Score', 
-      value: '4.2/5', 
-      change: '+0.3', 
-      trend: 'up', 
-      icon: BarChart3,
-      description: 'Employee performance rating'
-    }
-  ];
-
-  const reportTemplates = [
-    { 
-      id: 1, 
-      name: 'Employee Attendance Report', 
-      category: 'Attendance', 
-      lastGenerated: '2024-06-28',
-      size: '2.4 MB',
-      downloads: 45
-    },
-    { 
-      id: 2, 
-      name: 'Comprehensive Payroll Report', 
-      category: 'Payroll', 
-      lastGenerated: '2024-06-27',
-      size: '3.8 MB',
-      downloads: 67
-    },
-    { 
-      id: 3, 
-      name: 'Employee Turnover Analysis', 
-      category: 'HR Analytics', 
-      lastGenerated: '2024-06-26',
-      size: '1.9 MB',
-      downloads: 23
-    },
-    { 
-      id: 4, 
-      name: 'Performance Metrics Dashboard', 
-      category: 'Performance', 
-      lastGenerated: '2024-06-25',
-      size: '2.8 MB',
-      downloads: 34
-    },
-    { 
-      id: 5, 
-      name: 'Custom Department Analysis', 
-      category: 'Custom', 
-      lastGenerated: '2024-06-24',
-      size: '4.2 MB',
-      downloads: 12
-    }
-  ];
+  const metrics = [{
+    title: 'Total Employees',
+    value: '1,248',
+    change: '+12',
+    trend: 'up',
+    icon: Users,
+    description: 'Active employees in system'
+  }, {
+    title: 'Avg. Attendance Rate',
+    value: '94.5%',
+    change: '+2.1%',
+    trend: 'up',
+    icon: Calendar,
+    description: 'Monthly attendance average'
+  }, {
+    title: 'Monthly Payroll',
+    value: '$2.4M',
+    change: '+5.2%',
+    trend: 'up',
+    icon: DollarSign,
+    description: 'Total payroll expenses'
+  }, {
+    title: 'Avg. Performance Score',
+    value: '4.2/5',
+    change: '+0.3',
+    trend: 'up',
+    icon: BarChart3,
+    description: 'Employee performance rating'
+  }];
+  const reportTemplates = [{
+    id: 1,
+    name: 'Employee Attendance Report',
+    category: 'Attendance',
+    lastGenerated: '2024-06-28',
+    size: '2.4 MB',
+    downloads: 45
+  }, {
+    id: 2,
+    name: 'Comprehensive Payroll Report',
+    category: 'Payroll',
+    lastGenerated: '2024-06-27',
+    size: '3.8 MB',
+    downloads: 67
+  }, {
+    id: 3,
+    name: 'Employee Turnover Analysis',
+    category: 'HR Analytics',
+    lastGenerated: '2024-06-26',
+    size: '1.9 MB',
+    downloads: 23
+  }, {
+    id: 4,
+    name: 'Performance Metrics Dashboard',
+    category: 'Performance',
+    lastGenerated: '2024-06-25',
+    size: '2.8 MB',
+    downloads: 34
+  }, {
+    id: 5,
+    name: 'Custom Department Analysis',
+    category: 'Custom',
+    lastGenerated: '2024-06-24',
+    size: '4.2 MB',
+    downloads: 12
+  }];
 
   // Enhanced payroll data
-  const payrollData = [
-    { id: 'emp1', name: 'John Smith', baseSalary: 75000, bonuses: 5000, deductions: 15000, netPay: 65000, status: 'Processed' as const },
-    { id: 'emp2', name: 'Sarah Johnson', baseSalary: 68000, bonuses: 3200, deductions: 13500, netPay: 57700, status: 'Processed' as const },
-    { id: 'emp3', name: 'Mike Chen', baseSalary: 82000, bonuses: 6500, deductions: 17800, netPay: 70700, status: 'Pending' as const },
-    { id: 'emp4', name: 'Emily Davis', baseSalary: 71000, bonuses: 4100, deductions: 14200, netPay: 60900, status: 'Processed' as const },
-    { id: 'emp5', name: 'David Wilson', baseSalary: 79000, bonuses: 5800, deductions: 16500, netPay: 68300, status: 'Processed' as const }
-  ];
+  const payrollData = [{
+    id: 'emp1',
+    name: 'John Smith',
+    baseSalary: 75000,
+    bonuses: 5000,
+    deductions: 15000,
+    netPay: 65000,
+    status: 'Processed' as const
+  }, {
+    id: 'emp2',
+    name: 'Sarah Johnson',
+    baseSalary: 68000,
+    bonuses: 3200,
+    deductions: 13500,
+    netPay: 57700,
+    status: 'Processed' as const
+  }, {
+    id: 'emp3',
+    name: 'Mike Chen',
+    baseSalary: 82000,
+    bonuses: 6500,
+    deductions: 17800,
+    netPay: 70700,
+    status: 'Pending' as const
+  }, {
+    id: 'emp4',
+    name: 'Emily Davis',
+    baseSalary: 71000,
+    bonuses: 4100,
+    deductions: 14200,
+    netPay: 60900,
+    status: 'Processed' as const
+  }, {
+    id: 'emp5',
+    name: 'David Wilson',
+    baseSalary: 79000,
+    bonuses: 5800,
+    deductions: 16500,
+    netPay: 68300,
+    status: 'Processed' as const
+  }];
 
   // Enhanced functions
   const generateReport = (templateId: number) => {
@@ -185,7 +208,6 @@ This section contains detailed analysis specific to ${template.category}
 with comprehensive data points and actionable insights.
 `;
     }
-
     reportContent += `
 
 RECOMMENDATIONS:
@@ -210,7 +232,9 @@ Report Version: 2.1.0
     `;
 
     // Download the report
-    const blob = new Blob([reportContent], { type: 'text/plain' });
+    const blob = new Blob([reportContent], {
+      type: 'text/plain'
+    });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -219,13 +243,11 @@ Report Version: 2.1.0
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-
     toast({
       title: "Report Generated Successfully",
-      description: `${template.name} has been generated and downloaded.`,
+      description: `${template.name} has been generated and downloaded.`
     });
   };
-
   const exportToExcel = (data: any[], filename: string) => {
     // Simulate Excel export
     let csvContent = '';
@@ -237,8 +259,9 @@ Report Version: 2.1.0
         csvContent += Object.values(row).join(',') + '\n';
       });
     }
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const blob = new Blob([csvContent], {
+      type: 'text/csv'
+    });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -247,27 +270,23 @@ Report Version: 2.1.0
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-
     toast({
       title: "Data Exported",
-      description: `${filename} has been exported to CSV format.`,
+      description: `${filename} has been exported to CSV format.`
     });
   };
-
   const filteredReports = reportTemplates.filter(report => {
     const matchesSearch = report.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = reportFilters.category === 'all' || report.category === reportFilters.category;
     return matchesSearch && matchesCategory;
   });
-
-  return (
-    <div className="min-h-screen bg-gray-50">
+  return <div className="min-h-screen bg-gray-50">
       {/* Enhanced Header */}
       <header className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+              <Button variant="ghost" onClick={() => navigate('/dashboard')} className="bg-rose-600 hover:bg-rose-500">
                 ← Back to Dashboard
               </Button>
               <div className="flex items-center space-x-2">
@@ -302,8 +321,7 @@ Report Version: 2.1.0
           <TabsContent value="overview" className="space-y-6">
             {/* Enhanced Key Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {metrics.map((metric, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
+              {metrics.map((metric, index) => <Card key={index} className="hover:shadow-lg transition-shadow">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">{metric.title}</CardTitle>
                     <metric.icon className="h-4 w-4 text-muted-foreground" />
@@ -319,8 +337,7 @@ Report Version: 2.1.0
                     </div>
                     <p className="text-xs text-gray-500 mt-1">{metric.description}</p>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
             </div>
 
             {/* Enhanced Report Templates */}
@@ -334,14 +351,12 @@ Report Version: 2.1.0
                   <div className="flex items-center space-x-2">
                     <div className="flex items-center space-x-2">
                       <Search className="w-4 h-4 text-gray-400" />
-                      <Input
-                        placeholder="Search reports..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-48"
-                      />
+                      <Input placeholder="Search reports..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-48" />
                     </div>
-                    <Select value={reportFilters.category} onValueChange={(value) => setReportFilters(prev => ({ ...prev, category: value }))}>
+                    <Select value={reportFilters.category} onValueChange={value => setReportFilters(prev => ({
+                    ...prev,
+                    category: value
+                  }))}>
                       <SelectTrigger className="w-40">
                         <Filter className="w-4 h-4 mr-2" />
                         <SelectValue />
@@ -371,8 +386,7 @@ Report Version: 2.1.0
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredReports.map((report) => (
-                      <TableRow key={report.id} className="hover:bg-gray-50">
+                    {filteredReports.map(report => <TableRow key={report.id} className="hover:bg-gray-50">
                         <TableCell className="font-medium">{report.name}</TableCell>
                         <TableCell>
                           <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
@@ -384,11 +398,7 @@ Report Version: 2.1.0
                         <TableCell>{report.downloads}</TableCell>
                         <TableCell>
                           <div className="flex gap-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => generateReport(report.id)}
-                            >
+                            <Button variant="outline" size="sm" onClick={() => generateReport(report.id)}>
                               <BarChart3 className="w-4 h-4 mr-1" />
                               Generate
                             </Button>
@@ -398,8 +408,7 @@ Report Version: 2.1.0
                             </Button>
                           </div>
                         </TableCell>
-                      </TableRow>
-                    ))}
+                      </TableRow>)}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -656,21 +665,17 @@ Report Version: 2.1.0
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <Label htmlFor="startDate">Start Date</Label>
-                          <Input 
-                            id="startDate" 
-                            type="date" 
-                            value={reportFilters.startDate}
-                            onChange={(e) => setReportFilters(prev => ({ ...prev, startDate: e.target.value }))}
-                          />
+                          <Input id="startDate" type="date" value={reportFilters.startDate} onChange={e => setReportFilters(prev => ({
+                          ...prev,
+                          startDate: e.target.value
+                        }))} />
                         </div>
                         <div>
                           <Label htmlFor="endDate">End Date</Label>
-                          <Input 
-                            id="endDate" 
-                            type="date" 
-                            value={reportFilters.endDate}
-                            onChange={(e) => setReportFilters(prev => ({ ...prev, endDate: e.target.value }))}
-                          />
+                          <Input id="endDate" type="date" value={reportFilters.endDate} onChange={e => setReportFilters(prev => ({
+                          ...prev,
+                          endDate: e.target.value
+                        }))} />
                         </div>
                       </div>
                     </div>
@@ -678,16 +683,9 @@ Report Version: 2.1.0
                   <div className="space-y-4">
                     <h4 className="font-semibold">Available Data Fields</h4>
                     <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
-                      {[
-                        'Employee ID', 'Full Name', 'Department', 'Position', 'Hire Date',
-                        'Salary', 'Bonus', 'Attendance Rate', 'Performance Score', 'Leave Balance',
-                        'Work Hours', 'Overtime Hours', 'Training Completed', 'Skills Assessment',
-                        'Manager', 'Location', 'Status', 'Benefits', 'Emergency Contact'
-                      ].map((field) => (
-                        <Button key={field} variant="outline" size="sm" className="text-xs">
+                      {['Employee ID', 'Full Name', 'Department', 'Position', 'Hire Date', 'Salary', 'Bonus', 'Attendance Rate', 'Performance Score', 'Leave Balance', 'Work Hours', 'Overtime Hours', 'Training Completed', 'Skills Assessment', 'Manager', 'Location', 'Status', 'Benefits', 'Emergency Contact'].map(field => <Button key={field} variant="outline" size="sm" className="text-xs">
                           {field}
-                        </Button>
-                      ))}
+                        </Button>)}
                     </div>
                     <div className="mt-4">
                       <h5 className="font-medium mb-2">Selected Fields for Report</h5>
@@ -716,8 +714,6 @@ Report Version: 2.1.0
           </TabsContent>
         </Tabs>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ReportsAnalytics;
