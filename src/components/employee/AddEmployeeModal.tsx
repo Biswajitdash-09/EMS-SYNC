@@ -5,7 +5,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UserPlus } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserPlus, Upload, X } from 'lucide-react';
 import { Employee } from '@/hooks/useEmployeeData';
 
 interface AddEmployeeModalProps {
@@ -14,6 +15,7 @@ interface AddEmployeeModalProps {
 
 const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
   const [open, setOpen] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<string>('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -31,6 +33,41 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
     baseSalary: 0
   });
 
+  const handleProfilePictureUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check file size (limit to 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size must be less than 5MB');
+        return;
+      }
+
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfilePicture(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeProfilePicture = () => {
+    setProfilePicture('');
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase();
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -44,6 +81,7 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
       joinDate: formData.joinDate,
       address: formData.address,
       dateOfBirth: formData.dateOfBirth,
+      profilePicture: profilePicture || undefined,
       emergencyContact: {
         name: formData.emergencyContactName,
         phone: formData.emergencyContactPhone,
@@ -80,6 +118,7 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
       manager: '',
       baseSalary: 0
     });
+    setProfilePicture('');
   };
 
   return (
@@ -99,6 +138,49 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Profile Picture Upload Section */}
+          <div className="flex flex-col items-center space-y-4 p-4 border rounded-lg bg-gray-50">
+            <div className="flex flex-col items-center space-y-2">
+              <Avatar className="h-20 w-20">
+                <AvatarImage src={profilePicture} alt="Profile preview" />
+                <AvatarFallback className="text-lg">
+                  {formData.name ? getInitials(formData.name) : 'NE'}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex gap-2">
+                <Label htmlFor="profilePicture" className="cursor-pointer">
+                  <Button type="button" variant="outline" size="sm" asChild>
+                    <span>
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload Photo
+                    </span>
+                  </Button>
+                </Label>
+                {profilePicture && (
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={removeProfilePicture}
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Remove
+                  </Button>
+                )}
+              </div>
+              <Input
+                id="profilePicture"
+                type="file"
+                accept="image/*"
+                onChange={handleProfilePictureUpload}
+                className="hidden"
+              />
+              <p className="text-xs text-gray-500 text-center">
+                Upload a profile picture (max 5MB)
+              </p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="name">Full Name *</Label>
@@ -139,6 +221,11 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
                   <SelectItem value="Finance">Finance</SelectItem>
                   <SelectItem value="Marketing">Marketing</SelectItem>
                   <SelectItem value="Sales">Sales</SelectItem>
+                  <SelectItem value="Operations">Operations</SelectItem>
+                  <SelectItem value="Legal">Legal</SelectItem>
+                  <SelectItem value="Design">Design</SelectItem>
+                  <SelectItem value="Product">Product</SelectItem>
+                  <SelectItem value="Customer Support">Customer Support</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -162,6 +249,15 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
               />
             </div>
             <div>
+              <Label htmlFor="dateOfBirth">Date of Birth</Label>
+              <Input
+                id="dateOfBirth"
+                type="date"
+                value={formData.dateOfBirth}
+                onChange={(e) => setFormData({...formData, dateOfBirth: e.target.value})}
+              />
+            </div>
+            <div>
               <Label htmlFor="baseSalary">Base Salary</Label>
               <Input
                 id="baseSalary"
@@ -176,6 +272,14 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
                 id="manager"
                 value={formData.manager}
                 onChange={(e) => setFormData({...formData, manager: e.target.value})}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label htmlFor="address">Address</Label>
+              <Input
+                id="address"
+                value={formData.address}
+                onChange={(e) => setFormData({...formData, address: e.target.value})}
               />
             </div>
           </div>
