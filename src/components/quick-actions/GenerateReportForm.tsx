@@ -121,7 +121,7 @@ const GenerateReportForm = ({
           <Button onClick={onSubmit} disabled={dataCount === 0} className="bg-yellow-500 hover:bg-yellow-400">
             Generate & Download Report ({dataCount} records)
           </Button>
-          <Button variant="outline" onClick={onCancel}>
+          <Button variant="outline" onClick={onCancel} className="bg-pink-800 hover:bg-pink-700">
             Cancel
           </Button>
         </div>
