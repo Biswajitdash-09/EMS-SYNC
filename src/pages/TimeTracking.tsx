@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,7 +10,6 @@ import TimesheetSection from '@/components/time-tracking/TimesheetSection';
 import ShiftManagement from '@/components/time-tracking/ShiftManagement';
 import OvertimeTracking from '@/components/time-tracking/OvertimeTracking';
 import ReportsSection from '@/components/time-tracking/ReportsSection';
-
 const TimeTracking = () => {
   const navigate = useNavigate();
   const {
@@ -38,21 +36,16 @@ const TimeTracking = () => {
     addOvertimeRequest,
     deleteOvertimeRequest
   } = useTimeTrackingCore();
-
   const [currentTimeString, setCurrentTimeString] = useState('');
-
   useEffect(() => {
     const updateTime = () => {
-      setCurrentTimeString(
-        currentTime.toLocaleTimeString('en-US', {
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: true
-        })
-      );
+      setCurrentTimeString(currentTime.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      }));
     };
-
     updateTime();
     const timer = setInterval(updateTime, 1000);
     return () => clearInterval(timer);
@@ -63,15 +56,13 @@ const TimeTracking = () => {
     const today = new Date().toISOString().split('T')[0];
     return entry.date === today;
   });
-
-  return (
-    <div className="min-h-screen bg-gray-50">
+  return <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+              <Button variant="ghost" onClick={() => navigate('/dashboard')} className="bg-orange-500 hover:bg-orange-400">
                 ← Back to Dashboard
               </Button>
               <div className="flex items-center space-x-2">
@@ -88,11 +79,11 @@ const TimeTracking = () => {
                   {currentTimeString}
                 </div>
                 <p className="text-xs text-gray-500">
-                  {new Date().toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    month: 'short', 
-                    day: 'numeric' 
-                  })}
+                  {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  month: 'short',
+                  day: 'numeric'
+                })}
                 </p>
               </div>
               
@@ -101,25 +92,14 @@ const TimeTracking = () => {
                 <p className="text-xs text-gray-500">This week: {weeklyHours} hours</p>
               </div>
               
-              <Button 
-                onClick={handleClockToggle}
-                className={`px-6 py-2 font-medium transition-all duration-200 ${
-                  isClocked 
-                    ? "bg-red-600 hover:bg-red-700 shadow-red-200" 
-                    : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200"
-                } shadow-lg`}
-              >
-                {isClocked ? (
-                  <>
+              <Button onClick={handleClockToggle} className={`px-6 py-2 font-medium transition-all duration-200 ${isClocked ? "bg-red-600 hover:bg-red-700 shadow-red-200" : "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200"} shadow-lg`}>
+                {isClocked ? <>
                     <Pause className="w-4 h-4 mr-2" />
                     Clock Out
-                  </>
-                ) : (
-                  <>
+                  </> : <>
                     <Play className="w-4 h-4 mr-2" />
                     Clock In
-                  </>
-                )}
+                  </>}
               </Button>
             </div>
           </div>
@@ -153,38 +133,19 @@ const TimeTracking = () => {
 
           <TabsContent value="attendance" className="space-y-6">
             <AttendanceStats stats={attendanceStats} />
-            <AttendanceTable 
-              timeEntries={timeEntries}
-              onEditEntry={updateTimeEntry}
-              onDeleteEntry={deleteTimeEntry}
-              onViewDetails={(entry) => console.log('View details:', entry)}
-            />
+            <AttendanceTable timeEntries={timeEntries} onEditEntry={updateTimeEntry} onDeleteEntry={deleteTimeEntry} onViewDetails={entry => console.log('View details:', entry)} />
           </TabsContent>
 
           <TabsContent value="timesheets" className="space-y-6">
-            <TimesheetSection 
-              onAddEntry={addTimesheetEntry}
-              todayEntries={todayEntries}
-            />
+            <TimesheetSection onAddEntry={addTimesheetEntry} todayEntries={todayEntries} />
           </TabsContent>
 
           <TabsContent value="shifts" className="space-y-6">
-            <ShiftManagement 
-              shifts={shifts}
-              onAddShift={addShift}
-              onUpdateShift={updateShift}
-              onDeleteShift={deleteShift}
-            />
+            <ShiftManagement shifts={shifts} onAddShift={addShift} onUpdateShift={updateShift} onDeleteShift={deleteShift} />
           </TabsContent>
 
           <TabsContent value="overtime" className="space-y-6">
-            <OvertimeTracking 
-              overtimeRequests={overtimeRequests}
-              onApproveOvertime={approveOvertime}
-              onRejectOvertime={rejectOvertime}
-              onAddOvertimeRequest={addOvertimeRequest}
-              onDeleteOvertimeRequest={deleteOvertimeRequest}
-            />
+            <OvertimeTracking overtimeRequests={overtimeRequests} onApproveOvertime={approveOvertime} onRejectOvertime={rejectOvertime} onAddOvertimeRequest={addOvertimeRequest} onDeleteOvertimeRequest={deleteOvertimeRequest} />
           </TabsContent>
 
           <TabsContent value="reports" className="space-y-6">
@@ -230,7 +191,9 @@ const TimeTracking = () => {
                         <span>65%</span>
                       </div>
                       <div className="h-2 bg-gray-200 rounded">
-                        <div className="h-full bg-blue-500 rounded" style={{ width: '65%' }}></div>
+                        <div className="h-full bg-blue-500 rounded" style={{
+                        width: '65%'
+                      }}></div>
                       </div>
                     </div>
                     <div>
@@ -239,7 +202,9 @@ const TimeTracking = () => {
                         <span>20%</span>
                       </div>
                       <div className="h-2 bg-gray-200 rounded">
-                        <div className="h-full bg-green-500 rounded" style={{ width: '20%' }}></div>
+                        <div className="h-full bg-green-500 rounded" style={{
+                        width: '20%'
+                      }}></div>
                       </div>
                     </div>
                     <div>
@@ -248,7 +213,9 @@ const TimeTracking = () => {
                         <span>15%</span>
                       </div>
                       <div className="h-2 bg-gray-200 rounded">
-                        <div className="h-full bg-yellow-500 rounded" style={{ width: '15%' }}></div>
+                        <div className="h-full bg-yellow-500 rounded" style={{
+                        width: '15%'
+                      }}></div>
                       </div>
                     </div>
                   </div>
@@ -276,8 +243,6 @@ const TimeTracking = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default TimeTracking;
