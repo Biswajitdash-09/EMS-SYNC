@@ -1,7 +1,5 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, UserCheck, Calendar, DollarSign, TrendingUp } from 'lucide-react';
-
 const StatsCards = () => {
   const stats = [{
     title: "Total Employees",
@@ -32,18 +30,15 @@ const StatsCards = () => {
     icon: DollarSign,
     color: "purple"
   }];
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 perspective-1000">
-      {stats.map((stat, index) => (
-        <Card key={stat.title} className={`
+  return <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 perspective-1000">
+      {stats.map((stat, index) => <Card key={stat.title} className={`
           hover:shadow-lg transition-all duration-300 
           hover-lift card-3d transform-3d
           animate-slide-up stagger-${index + 1}
           group cursor-pointer
         `}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600 group-hover:text-gray-800 transition-colors">
+            <CardTitle className="text-sm font-medium transition-colors text-indigo-50">
               {stat.title}
             </CardTitle>
             <div className={`
@@ -69,13 +64,10 @@ const StatsCards = () => {
               `}>
                 {stat.change}
               </span>
-              <span className="text-gray-500 dark:text-gray-400">from last month</span>
+              <span className="text-yellow-200">from last month</span>
             </div>
           </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
+        </Card>)}
+    </div>;
 };
-
 export default StatsCards;
