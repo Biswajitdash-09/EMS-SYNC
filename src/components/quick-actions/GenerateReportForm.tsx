@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Database, Download } from 'lucide-react';
+import { FileText, Database, Download, AlertCircle } from 'lucide-react';
 import { useEmployeeData } from "@/hooks/useEmployeeData";
 import { useLeaveData } from "@/hooks/useLeaveData";
 
@@ -36,12 +36,12 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
     ? allEmployees.filter(emp => emp.department === reportParams.department)
     : allEmployees;
     
-  const recentLeaveRequests = allLeaveRequests.filter(req => {
-    const requestDate = new Date(req.appliedDate);
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    return requestDate >= thirtyDaysAgo;
-  });
+  const filteredLeaveRequests = reportParams.department 
+    ? allLeaveRequests.filter(req => {
+        const emp = allEmployees.find(e => e.name === req.employee);
+        return emp?.department === reportParams.department;
+      })
+    : allLeaveRequests;
 
   // Get data count based on report type and filters
   const getDataCount = () => {
@@ -49,14 +49,9 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
       case 'Attendance Report':
         return filteredEmployees.length;
       case 'Payroll Summary':
-        return activeEmployees.length;
+        return filteredEmployees.filter(emp => emp.status === 'Active').length;
       case 'Leave Analysis':
-        return reportParams.department 
-          ? allLeaveRequests.filter(req => {
-              const emp = allEmployees.find(e => e.name === req.employee);
-              return emp?.department === reportParams.department;
-            }).length
-          : allLeaveRequests.length;
+        return filteredLeaveRequests.length;
       case 'Performance Report':
         return filteredEmployees.length;
       case 'Department Overview':
@@ -67,6 +62,26 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
   };
 
   const dataCount = getDataCount();
+
+  // Get additional stats for preview
+  const getAdditionalStats = () => {
+    switch (reportParams.reportType) {
+      case 'Payroll Summary':
+        const totalSalary = filteredEmployees.reduce((sum, emp) => sum + emp.baseSalary, 0);
+        return `Total Annual Salaries: $${totalSalary.toLocaleString()}`;
+      case 'Leave Analysis':
+        const pendingRequests = filteredLeaveRequests.filter(req => req.status === 'Pending').length;
+        return `Pending Requests: ${pendingRequests}`;
+      case 'Department Overview':
+        if (reportParams.department) {
+          const deptSalary = filteredEmployees.reduce((sum, emp) => sum + emp.baseSalary, 0);
+          return `Department Budget: $${deptSalary.toLocaleString()}`;
+        }
+        return `Total Departments: ${departments.length}`;
+      default:
+        return `Active Employees: ${filteredEmployees.filter(emp => emp.status === 'Active').length}`;
+    }
+  };
 
   return (
     <Card>
@@ -101,7 +116,7 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
         {/* Report Configuration */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="reportType">Report Type</Label>
+            <Label htmlFor="reportType">Report Type *</Label>
             <select
               id="reportType"
               value={reportParams.reportType}
@@ -117,7 +132,7 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
           </div>
           
           <div>
-            <Label htmlFor="dateRange">Date Range</Label>
+            <Label htmlFor="dateRange">Date Range *</Label>
             <select
               id="dateRange"
               value={reportParams.dateRange}
@@ -135,7 +150,7 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
           </div>
           
           <div>
-            <Label htmlFor="format">Format</Label>
+            <Label htmlFor="format">Format *</Label>
             <select
               id="format"
               value={reportParams.format}
@@ -145,6 +160,7 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
               <option value="PDF">PDF</option>
               <option value="Excel">Excel</option>
               <option value="CSV">CSV</option>
+              <option value="Text">Text File</option>
             </select>
           </div>
           
@@ -170,14 +186,30 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
             <Download className="w-4 h-4 text-gray-600" />
             <span className="font-medium text-gray-800">Report Preview</span>
           </div>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-600 space-y-1">
             <p><strong>Report:</strong> {reportParams.reportType}</p>
             <p><strong>Period:</strong> {reportParams.dateRange}</p>
             <p><strong>Format:</strong> {reportParams.format}</p>
             <p><strong>Scope:</strong> {reportParams.department || 'All Departments'}</p>
             <p><strong>Data Records:</strong> {dataCount} items will be included</p>
+            <p><strong>Additional Info:</strong> {getAdditionalStats()}</p>
           </div>
         </div>
+
+        {/* Validation Warning */}
+        {dataCount === 0 && (
+          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-yellow-800">No Data Available</h4>
+                <p className="text-sm text-yellow-700 mt-1">
+                  No data matches the selected criteria. Please adjust your filters or select a different report type.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex gap-2">
@@ -186,18 +218,12 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
             className="bg-purple-600 hover:bg-purple-700"
             disabled={dataCount === 0}
           >
-            Generate Report ({dataCount} records)
+            Generate & Download Report ({dataCount} records)
           </Button>
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
         </div>
-
-        {dataCount === 0 && (
-          <div className="text-center py-4">
-            <p className="text-gray-500">No data available for the selected criteria.</p>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
