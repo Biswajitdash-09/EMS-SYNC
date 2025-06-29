@@ -1,4 +1,3 @@
-
 /**
  * Main Dashboard Page Component
  * Central hub for the HR management system
@@ -11,17 +10,14 @@ import StatsCards from '@/components/dashboard/StatsCards';
 import ModulesGrid from '@/components/dashboard/ModulesGrid';
 import RecentActivities from '@/components/dashboard/RecentActivities';
 import QuickActions from '@/components/dashboard/QuickActions';
-
 const Dashboard = () => {
   // Track active module for navigation
   const [activeModule, setActiveModule] = useState('overview');
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+  return <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Main navigation header */}
       <DashboardHeader />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-300">
         {/* Key performance indicators */}
         <StatsCards />
 
@@ -41,8 +37,6 @@ const Dashboard = () => {
         {/* Quick action buttons */}
         <QuickActions />
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Dashboard;
