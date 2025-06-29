@@ -55,7 +55,7 @@ const ReportConfiguration = ({
         <select id="format" value={reportParams.format} onChange={e => onParamsChange(prev => ({
         ...prev,
         format: e.target.value
-      }))} className="w-full p-2 border rounded-md">
+      }))} className="w-full p-2 border rounded-md bg-red-500">
           <option value="PDF">PDF</option>
           <option value="Excel">Excel</option>
           <option value="CSV">CSV</option>
