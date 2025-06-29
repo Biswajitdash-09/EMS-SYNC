@@ -13,13 +13,16 @@ interface EmployeeFormData {
   joinDate: string;
   address: string;
   dateOfBirth: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  emergencyContactRelationship: string;
   manager: string;
   baseSalary: number;
 }
 
 interface EmployeeFormFieldsProps {
   formData: EmployeeFormData;
-  setFormData: (data: EmployeeFormData) => void;
+  setFormData: (data: any) => void;
 }
 
 const EmployeeFormFields = ({ formData, setFormData }: EmployeeFormFieldsProps) => {
@@ -31,7 +34,7 @@ const EmployeeFormFields = ({ formData, setFormData }: EmployeeFormFieldsProps) 
           <Input
             id="name"
             value={formData.name}
-            onChange={(e) => setFormData({...formData, name: e.target.value})}
+            onChange={(e) => setFormData((prev: any) => ({...prev, name: e.target.value}))}
             required
           />
         </div>
@@ -41,7 +44,7 @@ const EmployeeFormFields = ({ formData, setFormData }: EmployeeFormFieldsProps) 
             id="email"
             type="email"
             value={formData.email}
-            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            onChange={(e) => setFormData((prev: any) => ({...prev, email: e.target.value}))}
             required
           />
         </div>
@@ -50,12 +53,12 @@ const EmployeeFormFields = ({ formData, setFormData }: EmployeeFormFieldsProps) 
           <Input
             id="phone"
             value={formData.phone}
-            onChange={(e) => setFormData({...formData, phone: e.target.value})}
+            onChange={(e) => setFormData((prev: any) => ({...prev, phone: e.target.value}))}
           />
         </div>
         <div>
           <Label htmlFor="department">Department *</Label>
-          <Select value={formData.department} onValueChange={(value) => setFormData({...formData, department: value})}>
+          <Select value={formData.department} onValueChange={(value) => setFormData((prev: any) => ({...prev, department: value}))}>
             <SelectTrigger>
               <SelectValue placeholder="Select Department" />
             </SelectTrigger>
@@ -78,7 +81,7 @@ const EmployeeFormFields = ({ formData, setFormData }: EmployeeFormFieldsProps) 
           <Input
             id="role"
             value={formData.role}
-            onChange={(e) => setFormData({...formData, role: e.target.value})}
+            onChange={(e) => setFormData((prev: any) => ({...prev, role: e.target.value}))}
             required
           />
         </div>
@@ -88,7 +91,7 @@ const EmployeeFormFields = ({ formData, setFormData }: EmployeeFormFieldsProps) 
             id="joinDate"
             type="date"
             value={formData.joinDate}
-            onChange={(e) => setFormData({...formData, joinDate: e.target.value})}
+            onChange={(e) => setFormData((prev: any) => ({...prev, joinDate: e.target.value}))}
             required
           />
         </div>
@@ -98,7 +101,7 @@ const EmployeeFormFields = ({ formData, setFormData }: EmployeeFormFieldsProps) 
             id="dateOfBirth"
             type="date"
             value={formData.dateOfBirth}
-            onChange={(e) => setFormData({...formData, dateOfBirth: e.target.value})}
+            onChange={(e) => setFormData((prev: any) => ({...prev, dateOfBirth: e.target.value}))}
           />
         </div>
         <div>
@@ -107,7 +110,7 @@ const EmployeeFormFields = ({ formData, setFormData }: EmployeeFormFieldsProps) 
             id="baseSalary"
             type="number"
             value={formData.baseSalary}
-            onChange={(e) => setFormData({...formData, baseSalary: Number(e.target.value)})}
+            onChange={(e) => setFormData((prev: any) => ({...prev, baseSalary: Number(e.target.value)}))}
           />
         </div>
         <div>
@@ -115,7 +118,7 @@ const EmployeeFormFields = ({ formData, setFormData }: EmployeeFormFieldsProps) 
           <Input
             id="manager"
             value={formData.manager}
-            onChange={(e) => setFormData({...formData, manager: e.target.value})}
+            onChange={(e) => setFormData((prev: any) => ({...prev, manager: e.target.value}))}
           />
         </div>
         <div className="md:col-span-2">
@@ -123,7 +126,7 @@ const EmployeeFormFields = ({ formData, setFormData }: EmployeeFormFieldsProps) 
           <Input
             id="address"
             value={formData.address}
-            onChange={(e) => setFormData({...formData, address: e.target.value})}
+            onChange={(e) => setFormData((prev: any) => ({...prev, address: e.target.value}))}
           />
         </div>
       </div>
