@@ -66,7 +66,7 @@ const QuickActionsPage = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               {/* Back to dashboard navigation */}
-              <Button variant="ghost" onClick={() => navigate('/dashboard')} className="bg-rose-900 hover:bg-rose-800">
+              <Button variant="ghost" onClick={() => navigate('/dashboard')} className="bg-amber-500 hover:bg-amber-400">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Dashboard
               </Button>
