@@ -38,7 +38,7 @@ const StatsCards = () => {
           group cursor-pointer
         `}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium transition-colors text-indigo-50">
+            <CardTitle className="text-sm transition-colors font-medium text-sky-500">
               {stat.title}
             </CardTitle>
             <div className={`
@@ -64,7 +64,7 @@ const StatsCards = () => {
               `}>
                 {stat.change}
               </span>
-              <span className="text-yellow-200">from last month</span>
+              <span className="text-indigo-900">from last month</span>
             </div>
           </CardContent>
         </Card>)}
