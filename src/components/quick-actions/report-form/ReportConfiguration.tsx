@@ -1,11 +1,9 @@
-
 /**
  * Report Configuration Component
  * Handles report parameter selection and configuration
  */
 
 import { Label } from "@/components/ui/label";
-
 interface ReportConfigurationProps {
   reportParams: {
     reportType: string;
@@ -16,18 +14,18 @@ interface ReportConfigurationProps {
   departments: string[];
   onParamsChange: (updates: any) => void;
 }
-
-const ReportConfiguration = ({ reportParams, departments, onParamsChange }: ReportConfigurationProps) => {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+const ReportConfiguration = ({
+  reportParams,
+  departments,
+  onParamsChange
+}: ReportConfigurationProps) => {
+  return <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <Label htmlFor="reportType">Report Type *</Label>
-        <select
-          id="reportType"
-          value={reportParams.reportType}
-          onChange={(e) => onParamsChange(prev => ({ ...prev, reportType: e.target.value }))}
-          className="w-full p-2 border rounded-md"
-        >
+        <select id="reportType" value={reportParams.reportType} onChange={e => onParamsChange(prev => ({
+        ...prev,
+        reportType: e.target.value
+      }))} className="w-full p-2 border rounded-md bg-lime-500">
           <option value="Attendance Report">Attendance Report</option>
           <option value="Payroll Summary">Payroll Summary</option>
           <option value="Leave Analysis">Leave Analysis</option>
@@ -38,12 +36,10 @@ const ReportConfiguration = ({ reportParams, departments, onParamsChange }: Repo
       
       <div>
         <Label htmlFor="dateRange">Date Range *</Label>
-        <select
-          id="dateRange"
-          value={reportParams.dateRange}
-          onChange={(e) => onParamsChange(prev => ({ ...prev, dateRange: e.target.value }))}
-          className="w-full p-2 border rounded-md"
-        >
+        <select id="dateRange" value={reportParams.dateRange} onChange={e => onParamsChange(prev => ({
+        ...prev,
+        dateRange: e.target.value
+      }))} className="w-full p-2 border rounded-md">
           <option value="Last 30 Days">Last 30 Days</option>
           <option value="Last 3 Months">Last 3 Months</option>
           <option value="Last 6 Months">Last 6 Months</option>
@@ -56,12 +52,10 @@ const ReportConfiguration = ({ reportParams, departments, onParamsChange }: Repo
       
       <div>
         <Label htmlFor="format">Format *</Label>
-        <select
-          id="format"
-          value={reportParams.format}
-          onChange={(e) => onParamsChange(prev => ({ ...prev, format: e.target.value }))}
-          className="w-full p-2 border rounded-md"
-        >
+        <select id="format" value={reportParams.format} onChange={e => onParamsChange(prev => ({
+        ...prev,
+        format: e.target.value
+      }))} className="w-full p-2 border rounded-md">
           <option value="PDF">PDF</option>
           <option value="Excel">Excel</option>
           <option value="CSV">CSV</option>
@@ -71,20 +65,14 @@ const ReportConfiguration = ({ reportParams, departments, onParamsChange }: Repo
       
       <div>
         <Label htmlFor="department">Department (Optional)</Label>
-        <select
-          id="department"
-          value={reportParams.department}
-          onChange={(e) => onParamsChange(prev => ({ ...prev, department: e.target.value }))}
-          className="w-full p-2 border rounded-md"
-        >
+        <select id="department" value={reportParams.department} onChange={e => onParamsChange(prev => ({
+        ...prev,
+        department: e.target.value
+      }))} className="w-full p-2 border rounded-md">
           <option value="">All Departments</option>
-          {departments.map(dept => (
-            <option key={dept} value={dept}>{dept}</option>
-          ))}
+          {departments.map(dept => <option key={dept} value={dept}>{dept}</option>)}
         </select>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ReportConfiguration;
