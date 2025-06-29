@@ -53,7 +53,7 @@ const StatsCards = () => {
             <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 group-hover:scale-105 transition-transform duration-300">
               {stat.value}
             </div>
-            <div className="flex items-center space-x-1 text-xs mt-2">
+            <div className="flex items-center space-x-1 text-xs mt-2 bg-amber-300">
               <TrendingUp className={`
                 h-3 w-3 transition-all duration-300
                 ${stat.trend === 'up' ? 'text-green-600 group-hover:animate-bounce' : 'text-red-600 rotate-180'}
