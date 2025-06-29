@@ -2,7 +2,7 @@
 import { useEmployeeCore } from './employee/useEmployeeCore';
 import { useEmployeeFilters } from './employee/useEmployeeFilters';
 
-export { Employee } from '@/types/employee';
+export type { Employee } from '@/types/employee';
 
 export const useEmployeeData = () => {
   const {
