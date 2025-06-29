@@ -116,12 +116,12 @@ const AddEmployeeForm = ({
             phone: e.target.value
           }))} placeholder="Enter phone number" />
           </div>
-          <div className="bg-transparent">
+          <div>
             <Label htmlFor="department">Department *</Label>
             <select id="department" value={employeeForm.department} onChange={e => onFormChange(prev => ({
             ...prev,
             department: e.target.value
-          }))} className="bg-red-500">
+          }))} className={`w-full p-2 border rounded-md ${!employeeForm.department ? 'border-red-300' : ''}`}>
               <option value="">Select Department</option>
               {departments.map(dept => <option key={dept} value={dept}>{dept}</option>)}
             </select>
