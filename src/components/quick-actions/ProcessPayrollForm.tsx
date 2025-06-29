@@ -1,4 +1,3 @@
-
 /**
  * Process Payroll Form Component for Quick Actions
  * Shows payroll summary from main employee records
@@ -10,16 +9,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, Users, AlertTriangle } from 'lucide-react';
 import { useEmployeeData } from "@/hooks/useEmployeeData";
-
 interface ProcessPayrollFormProps {
   onSubmit: () => void;
   onCancel: () => void;
 }
-
-const ProcessPayrollForm = ({ onSubmit, onCancel }: ProcessPayrollFormProps) => {
+const ProcessPayrollForm = ({
+  onSubmit,
+  onCancel
+}: ProcessPayrollFormProps) => {
   // Get real-time employee data from main records
-  const { allEmployees } = useEmployeeData();
-  
+  const {
+    allEmployees
+  } = useEmployeeData();
+
   // Calculate payroll statistics from main employee records
   const activeEmployees = allEmployees.filter(emp => emp.status === 'Active');
   const totalSalaryBudget = activeEmployees.reduce((sum, emp) => sum + emp.baseSalary, 0);
@@ -27,11 +29,8 @@ const ProcessPayrollForm = ({ onSubmit, onCancel }: ProcessPayrollFormProps) => 
     acc[emp.department] = (acc[emp.department] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
-
   const avgSalary = activeEmployees.length > 0 ? totalSalaryBudget / activeEmployees.length : 0;
-
-  return (
-    <Card>
+  return <Card>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <DollarSign className="w-5 h-5 text-green-600" />
@@ -80,12 +79,10 @@ const ProcessPayrollForm = ({ onSubmit, onCancel }: ProcessPayrollFormProps) => 
         <div className="space-y-3">
           <h4 className="font-medium text-gray-900">Department Breakdown</h4>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {Object.entries(departmentBreakdown).map(([dept, count]) => (
-              <div key={dept} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+            {Object.entries(departmentBreakdown).map(([dept, count]) => <div key={dept} className="flex items-center justify-between p-2 rounded bg-blue-700">
                 <span className="text-sm font-medium">{dept}</span>
                 <Badge variant="secondary">{count}</Badge>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
 
@@ -108,11 +105,7 @@ const ProcessPayrollForm = ({ onSubmit, onCancel }: ProcessPayrollFormProps) => 
 
         {/* Action Buttons */}
         <div className="flex gap-2">
-          <Button 
-            onClick={onSubmit}
-            className="bg-green-600 hover:bg-green-700"
-            disabled={activeEmployees.length === 0}
-          >
+          <Button onClick={onSubmit} disabled={activeEmployees.length === 0} className="bg-orange-400 hover:bg-orange-300">
             Process Payroll for {activeEmployees.length} Employees
           </Button>
           <Button variant="outline" onClick={onCancel}>
@@ -120,14 +113,10 @@ const ProcessPayrollForm = ({ onSubmit, onCancel }: ProcessPayrollFormProps) => 
           </Button>
         </div>
 
-        {activeEmployees.length === 0 && (
-          <div className="text-center py-4">
+        {activeEmployees.length === 0 && <div className="text-center py-4">
             <p className="text-gray-500">No active employees found for payroll processing.</p>
-          </div>
-        )}
+          </div>}
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
-
 export default ProcessPayrollForm;
