@@ -1,4 +1,3 @@
-
 /**
  * Generate Report Form Component for Quick Actions
  * Creates reports using data from main system records
@@ -13,7 +12,6 @@ import { useLeaveData } from "@/hooks/useLeaveData";
 import ReportDataSource from "./report-form/ReportDataSource";
 import ReportConfiguration from "./report-form/ReportConfiguration";
 import ReportPreview from "./report-form/ReportPreview";
-
 interface GenerateReportFormProps {
   reportParams: {
     reportType: string;
@@ -25,23 +23,27 @@ interface GenerateReportFormProps {
   onSubmit: () => void;
   onCancel: () => void;
 }
-
-const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }: GenerateReportFormProps) => {
+const GenerateReportForm = ({
+  reportParams,
+  onParamsChange,
+  onSubmit,
+  onCancel
+}: GenerateReportFormProps) => {
   // Get real-time data from main system records
-  const { allEmployees, departments } = useEmployeeData();
-  const { allLeaveRequests } = useLeaveData();
+  const {
+    allEmployees,
+    departments
+  } = useEmployeeData();
+  const {
+    allLeaveRequests
+  } = useLeaveData();
 
   // Filter data based on report parameters
-  const filteredEmployees = reportParams.department 
-    ? allEmployees.filter(emp => emp.department === reportParams.department)
-    : allEmployees;
-    
-  const filteredLeaveRequests = reportParams.department 
-    ? allLeaveRequests.filter(req => {
-        const emp = allEmployees.find(e => e.name === req.employee);
-        return emp?.department === reportParams.department;
-      })
-    : allLeaveRequests;
+  const filteredEmployees = reportParams.department ? allEmployees.filter(emp => emp.department === reportParams.department) : allEmployees;
+  const filteredLeaveRequests = reportParams.department ? allLeaveRequests.filter(req => {
+    const emp = allEmployees.find(e => e.name === req.employee);
+    return emp?.department === reportParams.department;
+  }) : allLeaveRequests;
 
   // Get data count based on report type and filters
   const getDataCount = () => {
@@ -60,7 +62,6 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
         return filteredEmployees.length;
     }
   };
-
   const dataCount = getDataCount();
 
   // Get additional stats for preview
@@ -82,9 +83,7 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
         return `Active Employees: ${filteredEmployees.filter(emp => emp.status === 'Active').length}`;
     }
   };
-
-  return (
-    <Card>
+  return <Card>
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <FileText className="w-5 h-5 text-purple-600" />
@@ -96,28 +95,16 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Data Source Info */}
-        <ReportDataSource 
-          totalEmployees={allEmployees.length}
-          totalLeaveRequests={allLeaveRequests.length}
-        />
+        <ReportDataSource totalEmployees={allEmployees.length} totalLeaveRequests={allLeaveRequests.length} />
 
         {/* Report Configuration */}
-        <ReportConfiguration
-          reportParams={reportParams}
-          departments={departments}
-          onParamsChange={onParamsChange}
-        />
+        <ReportConfiguration reportParams={reportParams} departments={departments} onParamsChange={onParamsChange} />
 
         {/* Report Preview */}
-        <ReportPreview
-          reportParams={reportParams}
-          dataCount={dataCount}
-          additionalStats={getAdditionalStats()}
-        />
+        <ReportPreview reportParams={reportParams} dataCount={dataCount} additionalStats={getAdditionalStats()} />
 
         {/* Validation Warning */}
-        {dataCount === 0 && (
-          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+        {dataCount === 0 && <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
             <div className="flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
               <div>
@@ -127,16 +114,11 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
                 </p>
               </div>
             </div>
-          </div>
-        )}
+          </div>}
 
         {/* Action Buttons */}
         <div className="flex gap-2">
-          <Button 
-            onClick={onSubmit}
-            className="bg-purple-600 hover:bg-purple-700"
-            disabled={dataCount === 0}
-          >
+          <Button onClick={onSubmit} disabled={dataCount === 0} className="bg-yellow-500 hover:bg-yellow-400">
             Generate & Download Report ({dataCount} records)
           </Button>
           <Button variant="outline" onClick={onCancel}>
@@ -144,8 +126,6 @@ const GenerateReportForm = ({ reportParams, onParamsChange, onSubmit, onCancel }
           </Button>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
-
 export default GenerateReportForm;
