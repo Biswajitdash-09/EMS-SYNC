@@ -68,7 +68,7 @@ const ReportConfiguration = ({
         <select id="department" value={reportParams.department} onChange={e => onParamsChange(prev => ({
         ...prev,
         department: e.target.value
-      }))} className="w-full p-2 border rounded-md">
+      }))} className="w-full p-2 border rounded-md bg-violet-500">
           <option value="">All Departments</option>
           {departments.map(dept => <option key={dept} value={dept}>{dept}</option>)}
         </select>
