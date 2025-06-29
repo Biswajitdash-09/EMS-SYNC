@@ -31,7 +31,7 @@ const LeaveRequestsForm = ({ onLeaveAction, onCancel }: LeaveRequestsFormProps) 
               <div key={request.id} className="p-3 border rounded-md">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-medium">{request.employeeName}</h4>
+                    <h4 className="font-medium">{request.employee}</h4>
                     <p className="text-sm text-gray-600">
                       {request.type} - {request.days} days
                     </p>
@@ -45,14 +45,14 @@ const LeaveRequestsForm = ({ onLeaveAction, onCancel }: LeaveRequestsFormProps) 
                   <div className="flex gap-2">
                     <Button 
                       size="sm" 
-                      onClick={() => onLeaveAction('approve', request.id, request.employeeName)}
+                      onClick={() => onLeaveAction('approve', request.id, request.employee)}
                     >
                       Approve
                     </Button>
                     <Button 
                       size="sm" 
                       variant="destructive"
-                      onClick={() => onLeaveAction('reject', request.id, request.employeeName)}
+                      onClick={() => onLeaveAction('reject', request.id, request.employee)}
                     >
                       Reject
                     </Button>
