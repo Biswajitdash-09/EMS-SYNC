@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,10 +17,8 @@ import LeaveBalancesTable from '@/components/leave/LeaveBalancesTable';
 import LeaveTypesConfiguration from '@/components/leave/LeaveTypesConfiguration';
 import HolidayCalendar from '@/components/leave/HolidayCalendar';
 import LeaveReportsSection from '@/components/leave/LeaveReportsSection';
-
 const LeaveManagement = () => {
   const navigate = useNavigate();
-  
   const {
     leaveRequests,
     leaveBalances,
@@ -46,8 +43,9 @@ const LeaveManagement = () => {
     pendingRequests,
     approvedThisMonth
   } = useLeaveData();
-
-  const { allEmployees } = useEmployeeData();
+  const {
+    allEmployees
+  } = useEmployeeData();
 
   // Modal states
   const [showNewRequestModal, setShowNewRequestModal] = useState(false);
@@ -56,30 +54,25 @@ const LeaveManagement = () => {
   const [showLeaveTypeModal, setShowLeaveTypeModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [editingLeaveType, setEditingLeaveType] = useState(null);
-
   const handleApprovalAction = (request: any) => {
     setSelectedRequest(request);
     setShowApprovalModal(true);
   };
-
   const handleEditLeaveType = (leaveType: any) => {
     setEditingLeaveType(leaveType);
     setShowLeaveTypeModal(true);
   };
-
   const employeeOptions = allEmployees.map(emp => ({
     id: emp.id,
     name: emp.name
   }));
-
-  return (
-    <div className="min-h-screen bg-gray-50">
+  return <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+              <Button variant="ghost" onClick={() => navigate('/dashboard')} className="bg-lime-800 hover:bg-lime-700">
                 ← Back to Dashboard
               </Button>
               <div className="flex items-center space-x-2">
@@ -87,10 +80,7 @@ const LeaveManagement = () => {
                 <h1 className="text-xl font-bold text-gray-900">Leave Management</h1>
               </div>
             </div>
-            <Button 
-              className="bg-orange-600 hover:bg-orange-700"
-              onClick={() => setShowNewRequestModal(true)}
-            >
+            <Button className="bg-orange-600 hover:bg-orange-700" onClick={() => setShowNewRequestModal(true)}>
               <Calendar className="w-4 h-4 mr-2" />
               New Leave Request
             </Button>
@@ -100,11 +90,7 @@ const LeaveManagement = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
-        <LeaveStatsCards 
-          pendingRequests={pendingRequests}
-          approvedThisMonth={approvedThisMonth}
-          totalHolidays={holidays.length}
-        />
+        <LeaveStatsCards pendingRequests={pendingRequests} approvedThisMonth={approvedThisMonth} totalHolidays={holidays.length} />
 
         <Tabs defaultValue="requests" className="space-y-6">
           <TabsList className="grid w-full grid-cols-5">
@@ -121,23 +107,10 @@ const LeaveManagement = () => {
                 <CardTitle>Leave Requests & Approval System</CardTitle>
                 <CardDescription>Manage and process employee leave requests</CardDescription>
                 
-                <LeaveRequestFilters
-                  statusFilter={statusFilter}
-                  typeFilter={typeFilter}
-                  employeeFilter={employeeFilter}
-                  setStatusFilter={setStatusFilter}
-                  setTypeFilter={setTypeFilter}
-                  setEmployeeFilter={setEmployeeFilter}
-                  leaveTypes={leaveTypes}
-                  employees={allEmployees}
-                />
+                <LeaveRequestFilters statusFilter={statusFilter} typeFilter={typeFilter} employeeFilter={employeeFilter} setStatusFilter={setStatusFilter} setTypeFilter={setTypeFilter} setEmployeeFilter={setEmployeeFilter} leaveTypes={leaveTypes} employees={allEmployees} />
               </CardHeader>
               <CardContent>
-                <LeaveRequestsTable
-                  leaveRequests={leaveRequests}
-                  onApprovalAction={handleApprovalAction}
-                  onDeleteRequest={deleteLeaveRequest}
-                />
+                <LeaveRequestsTable leaveRequests={leaveRequests} onApprovalAction={handleApprovalAction} onDeleteRequest={deleteLeaveRequest} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -163,20 +136,16 @@ const LeaveManagement = () => {
                     <CardDescription>Configure different types of leave policies</CardDescription>
                   </div>
                   <Button onClick={() => {
-                    setEditingLeaveType(null);
-                    setShowLeaveTypeModal(true);
-                  }}>
+                  setEditingLeaveType(null);
+                  setShowLeaveTypeModal(true);
+                }}>
                     <Plus className="w-4 h-4 mr-2" />
                     Add Leave Type
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
-                <LeaveTypesConfiguration
-                  leaveTypes={leaveTypes}
-                  onEditLeaveType={handleEditLeaveType}
-                  onDeleteLeaveType={deleteLeaveType}
-                />
+                <LeaveTypesConfiguration leaveTypes={leaveTypes} onEditLeaveType={handleEditLeaveType} onDeleteLeaveType={deleteLeaveType} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -199,10 +168,7 @@ const LeaveManagement = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <HolidayCalendar
-                  holidays={holidays}
-                  onDeleteHoliday={deleteHoliday}
-                />
+                <HolidayCalendar holidays={holidays} onDeleteHoliday={deleteHoliday} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -214,11 +180,7 @@ const LeaveManagement = () => {
                 <CardDescription>Generate reports and track leave patterns</CardDescription>
               </CardHeader>
               <CardContent>
-                <LeaveReportsSection
-                  pendingRequests={pendingRequests}
-                  approvedThisMonth={approvedThisMonth}
-                  totalLeaveTypes={leaveTypes.length}
-                />
+                <LeaveReportsSection pendingRequests={pendingRequests} approvedThisMonth={approvedThisMonth} totalLeaveTypes={leaveTypes.length} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -226,47 +188,19 @@ const LeaveManagement = () => {
       </div>
 
       {/* Modals */}
-      <NewLeaveRequestModal
-        open={showNewRequestModal}
-        onClose={() => setShowNewRequestModal(false)}
-        onSubmit={addLeaveRequest}
-        leaveTypes={leaveTypes}
-        employees={employeeOptions}
-        getAvailableBalance={getAvailableBalance}
-      />
+      <NewLeaveRequestModal open={showNewRequestModal} onClose={() => setShowNewRequestModal(false)} onSubmit={addLeaveRequest} leaveTypes={leaveTypes} employees={employeeOptions} getAvailableBalance={getAvailableBalance} />
 
-      <LeaveApprovalModal
-        open={showApprovalModal}
-        onClose={() => {
-          setShowApprovalModal(false);
-          setSelectedRequest(null);
-        }}
-        request={selectedRequest}
-        onApprove={approveLeaveRequest}
-        onReject={rejectLeaveRequest}
-      />
+      <LeaveApprovalModal open={showApprovalModal} onClose={() => {
+      setShowApprovalModal(false);
+      setSelectedRequest(null);
+    }} request={selectedRequest} onApprove={approveLeaveRequest} onReject={rejectLeaveRequest} />
 
-      <HolidayModal
-        open={showHolidayModal}
-        onClose={() => setShowHolidayModal(false)}
-        onSubmit={addHoliday}
-      />
+      <HolidayModal open={showHolidayModal} onClose={() => setShowHolidayModal(false)} onSubmit={addHoliday} />
 
-      <LeaveTypeModal
-        open={showLeaveTypeModal}
-        onClose={() => {
-          setShowLeaveTypeModal(false);
-          setEditingLeaveType(null);
-        }}
-        onSubmit={editingLeaveType ? 
-          (data) => updateLeaveType(editingLeaveType.id, data) : 
-          addLeaveType
-        }
-        leaveType={editingLeaveType}
-        isEdit={!!editingLeaveType}
-      />
-    </div>
-  );
+      <LeaveTypeModal open={showLeaveTypeModal} onClose={() => {
+      setShowLeaveTypeModal(false);
+      setEditingLeaveType(null);
+    }} onSubmit={editingLeaveType ? data => updateLeaveType(editingLeaveType.id, data) : addLeaveType} leaveType={editingLeaveType} isEdit={!!editingLeaveType} />
+    </div>;
 };
-
 export default LeaveManagement;
