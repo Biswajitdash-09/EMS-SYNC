@@ -89,7 +89,7 @@ const LeaveRequestsForm = ({
                     <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => onLeaveAction('approve', request.id, request.employee)}>
                       Approve
                     </Button>
-                    <Button size="sm" variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => onLeaveAction('reject', request.id, request.employee)}>
+                    <Button size="sm" variant="outline" onClick={() => onLeaveAction('reject', request.id, request.employee)} className="text-red-600 border-red-200 bg-yellow-300 hover:bg-yellow-200">
                       Reject
                     </Button>
                   </div>
