@@ -1,19 +1,23 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { UserPlus, DollarSign, Calendar, FileText, BarChart3, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useEmployeeData } from "@/hooks/useEmployeeData";
 import { useLeaveData } from "@/hooks/useLeaveData";
+import AddEmployeeForm from "@/components/quick-actions/AddEmployeeForm";
+import ProcessPayrollForm from "@/components/quick-actions/ProcessPayrollForm";
+import LeaveRequestsForm from "@/components/quick-actions/LeaveRequestsForm";
+import GenerateReportForm from "@/components/quick-actions/GenerateReportForm";
+import PerformanceReviewForm from "@/components/quick-actions/PerformanceReviewForm";
 
 const QuickActionsPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { addEmployee } = useEmployeeData();
-  const { allLeaveRequests, approveLeaveRequest, rejectLeaveRequest } = useLeaveData();
+  const { approveLeaveRequest, rejectLeaveRequest } = useLeaveData();
   const [activeAction, setActiveAction] = useState<string | null>(null);
 
   // Form states for different actions
@@ -215,34 +219,111 @@ const QuickActionsPage = () => {
     setActiveAction(null);
   };
 
-  const pendingLeaveRequests = allLeaveRequests.filter(req => req.status === 'Pending').slice(0, 3);
-
   const renderActionContent = () => {
     switch (activeAction) {
       case 'add-employee':
         return (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <UserPlus className="w-5 h-5 text-blue-600" />
-                <span>Add New Employee</span>
-              </CardTitle>
-              <CardDescription>Fill in the information to create a new employee profile</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="firstName">First Name *</Label>
-                  <Input 
-                    id="firstName" 
-                    value={employeeForm.firstName}
-                    onChange={(e) => setEmployeeForm(prev => ({ ...prev, firstName: e.target.value }))}
-                    placeholder="Enter first name" 
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="lastName">Last Name *</Label>
-                  <Input 
-                    id="lastName" 
-                    value={employeeForm.lastName}
-                    onChange={(e) => setEmployeeForm(
+          <AddEmployeeForm
+            employeeForm={employeeForm}
+            onFormChange={setEmployeeForm}
+            onSubmit={handleAddEmployee}
+            onCancel={() => setActiveAction(null)}
+          />
+        );
+      case 'process-payroll':
+        return (
+          <ProcessPayrollForm
+            onSubmit={handleProcessPayroll}
+            onCancel={() => setActiveAction(null)}
+          />
+        );
+      case 'leave-requests':
+        return (
+          <LeaveRequestsForm
+            onLeaveAction={handleLeaveAction}
+            onCancel={() => setActiveAction(null)}
+          />
+        );
+      case 'generate-report':
+        return (
+          <GenerateReportForm
+            reportParams={reportParams}
+            onParamsChange={setReportParams}
+            onSubmit={handleGenerateReport}
+            onCancel={() => setActiveAction(null)}
+          />
+        );
+      case 'performance-review':
+        return (
+          <PerformanceReviewForm
+            reviewForm={reviewForm}
+            onFormChange={setReviewForm}
+            onSubmit={handleScheduleReview}
+            onCancel={() => setActiveAction(null)}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Dashboard
+              </Button>
+              <h1 className="text-xl font-bold text-gray-900">Quick Actions</h1>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeAction ? (
+          <div className="space-y-6">
+            {renderActionContent()}
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Available Quick Actions</h2>
+              <p className="text-gray-600">Perform common HR tasks quickly and efficiently</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {quickActions.map((action) => {
+                const IconComponent = action.icon;
+                return (
+                  <Card key={action.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-3">
+                        <div className={`p-2 rounded-full bg-${action.color}-100`}>
+                          <IconComponent className={`w-6 h-6 text-${action.color}-600`} />
+                        </div>
+                        <span>{action.title}</span>
+                      </CardTitle>
+                      <CardDescription>{action.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button onClick={action.action} className="w-full">
+                        Start Action
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default QuickActionsPage;
