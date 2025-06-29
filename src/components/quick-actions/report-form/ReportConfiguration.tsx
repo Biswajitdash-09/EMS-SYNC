@@ -39,7 +39,7 @@ const ReportConfiguration = ({
         <select id="dateRange" value={reportParams.dateRange} onChange={e => onParamsChange(prev => ({
         ...prev,
         dateRange: e.target.value
-      }))} className="w-full p-2 border rounded-md">
+      }))} className="w-full p-2 border rounded-md bg-amber-500">
           <option value="Last 30 Days">Last 30 Days</option>
           <option value="Last 3 Months">Last 3 Months</option>
           <option value="Last 6 Months">Last 6 Months</option>
