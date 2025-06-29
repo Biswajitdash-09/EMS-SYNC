@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -399,8 +398,8 @@ const QuickActionsPage = () => {
                       <div className="flex justify-between items-start">
                         <div>
                           <h4 className="font-semibold">{request.employee}</h4>
-                          <p className="text-sm text-gray-600">{request.leaveType} - {request.startDate} to {request.endDate}</p>
-                          <p className="text-sm">Duration: {request.totalDays} day(s)</p>
+                          <p className="text-sm text-gray-600">{request.type} - {request.startDate} to {request.endDate}</p>
+                          <p className="text-sm">Duration: {request.days} day(s)</p>
                           {request.reason && <p className="text-sm text-gray-500 mt-1">Reason: {request.reason}</p>}
                         </div>
                         <div className="flex space-x-2">
@@ -472,7 +471,7 @@ const QuickActionsPage = () => {
                     className="w-full p-2 border rounded-md"
                   >
                     <option value="Last 30 Days">Last 30 Days</option>
-                    <option value="Last Quarter">Last Quarter</option>
+                    <option value="Last Quarter">Last Quarter</soption>
                     <option value="Last 6 Months">Last 6 Months</option>
                     <option value="Last Year">Last Year</option>
                     <option value="Custom Range">Custom Range</option>
