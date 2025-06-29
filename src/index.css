@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -99,5 +100,123 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* 3D Effects and Advanced Animations */
+@layer utilities {
+  /* 3D Transform Utilities */
+  .transform-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .perspective-2000 {
+    perspective: 2000px;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  
+  /* 3D Hover Effects */
+  .hover-lift {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-8px) rotateX(5deg) rotateY(5deg);
+  }
+  
+  .hover-tilt {
+    transition: transform 0.3s ease;
+  }
+  
+  .hover-tilt:hover {
+    transform: rotateX(10deg) rotateY(-10deg) scale(1.05);
+  }
+  
+  /* Floating Animation */
+  .float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(1deg); }
+    66% { transform: translateY(-5px) rotate(-1deg); }
+  }
+  
+  /* Parallax Scroll Effects */
+  .parallax-slow {
+    transform: translateZ(-1px) scale(2);
+  }
+  
+  .parallax-fast {
+    transform: translateZ(1px) scale(0.5);
+  }
+  
+  /* Glass Morphism Effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Enhanced Card Animations */
+  .card-3d {
+    perspective: 1000px;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+  }
+  
+  .card-3d:hover {
+    transform: rotateY(5deg) rotateX(5deg);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Staggered Animation Delays */
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+  .stagger-5 { animation-delay: 0.5s; }
+  .stagger-6 { animation-delay: 0.6s; }
+  
+  /* Pulse with 3D effect */
+  .pulse-3d {
+    animation: pulse3d 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse3d {
+    0%, 100% {
+      transform: scale(1) translateZ(0);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.05) translateZ(10px);
+      opacity: 0.8;
+    }
+  }
+  
+  /* Glow Effects */
+  .glow-blue {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  }
+  
+  .glow-green {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+  }
+  
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
   }
 }

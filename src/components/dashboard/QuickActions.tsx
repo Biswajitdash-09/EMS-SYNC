@@ -14,6 +14,7 @@ const QuickActions = () => {
       description: 'Onboard new team members',
       icon: UserPlus,
       color: 'blue',
+      gradient: 'from-blue-400 to-blue-600',
       route: '/quick-actions'
     },
     {
@@ -22,6 +23,7 @@ const QuickActions = () => {
       description: 'Monthly salary processing',
       icon: DollarSign,
       color: 'green',
+      gradient: 'from-green-400 to-green-600',
       route: '/quick-actions'
     },
     {
@@ -30,6 +32,7 @@ const QuickActions = () => {
       description: 'Review pending applications',
       icon: Calendar,
       color: 'orange',
+      gradient: 'from-orange-400 to-orange-600',
       route: '/quick-actions'
     },
     {
@@ -38,6 +41,7 @@ const QuickActions = () => {
       description: 'Business intelligence reports',
       icon: FileText,
       color: 'purple',
+      gradient: 'from-purple-400 to-purple-600',
       route: '/quick-actions'
     },
     {
@@ -46,17 +50,18 @@ const QuickActions = () => {
       description: 'Employee evaluations',
       icon: BarChart3,
       color: 'red',
+      gradient: 'from-red-400 to-red-600',
       route: '/quick-actions'
     }
   ];
 
   return (
-    <Card className="mt-8">
+    <Card className="mt-8 overflow-hidden">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-lg">Quick Actions</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-lg animate-fade-in">Quick Actions</CardTitle>
+            <CardDescription className="animate-fade-in stagger-1">
               Frequently used actions for faster workflow
             </CardDescription>
           </div>
@@ -64,31 +69,93 @@ const QuickActions = () => {
             variant="outline" 
             size="sm"
             onClick={() => navigate('/quick-actions')}
-            className="flex items-center space-x-2"
+            className="
+              flex items-center space-x-2 transition-all duration-300
+              hover:scale-105 hover:shadow-lg hover-lift
+              group
+            "
           >
-            <span>View All</span>
-            <ExternalLink className="w-4 h-4" />
+            <span className="group-hover:animate-pulse">View All</span>
+            <ExternalLink className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
           </Button>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {quickActions.map((action) => {
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 perspective-2000">
+          {quickActions.map((action, index) => {
             const Icon = action.icon;
             return (
-              <div key={action.id} className="group">
+              <div key={action.id} className="group transform-3d">
                 <Button 
                   variant="outline" 
-                  className="h-auto p-4 flex flex-col items-center space-y-3 hover:bg-blue-50 hover:border-blue-300 dark:hover:bg-blue-900/20 dark:hover:border-blue-600 w-full transition-all duration-300" 
+                  className={`
+                    h-auto p-6 flex flex-col items-center space-y-4 w-full
+                    transition-all duration-500 ease-out
+                    hover:border-transparent hover:shadow-2xl
+                    hover-tilt card-3d
+                    animate-flip-in stagger-${Math.min(index + 1, 6)}
+                    bg-gradient-to-br from-white to-gray-50 
+                    dark:from-gray-800 dark:to-gray-900
+                    hover:from-gray-50 hover:to-white
+                    dark:hover:from-gray-700 dark:hover:to-gray-800
+                    relative overflow-hidden
+                  `}
                   onClick={() => navigate(action.route)}
                 >
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center bg-${action.color}-100 dark:bg-${action.color}-900/30 group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className={`w-5 h-5 text-${action.color}-600 dark:text-${action.color}-400`} />
+                  {/* Background Glow Effect */}
+                  <div className={`
+                    absolute inset-0 opacity-0 group-hover:opacity-10 
+                    transition-opacity duration-500
+                    bg-gradient-to-br ${action.gradient} blur-xl
+                  `} />
+                  
+                  {/* Icon Container */}
+                  <div className={`
+                    relative w-12 h-12 rounded-2xl flex items-center justify-center
+                    transition-all duration-500 transform-3d
+                    group-hover:scale-125 group-hover:rotate-12
+                    bg-gradient-to-br ${action.gradient}
+                    shadow-lg group-hover:shadow-xl
+                    z-10
+                  `}>
+                    {/* Icon Glow */}
+                    <div className={`
+                      absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-75
+                      transition-opacity duration-500 blur-md
+                      bg-gradient-to-br ${action.gradient}
+                    `} />
+                    
+                    <Icon className="w-6 h-6 text-white relative z-10 group-hover:animate-pulse" />
                   </div>
-                  <div className="text-center">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{action.title}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{action.description}</div>
+                  
+                  {/* Content */}
+                  <div className="text-center z-10 relative">
+                    <div className="
+                      text-sm font-medium text-gray-900 dark:text-gray-100
+                      group-hover:text-transparent group-hover:bg-gradient-to-r
+                      group-hover:from-gray-900 group-hover:to-gray-600
+                      dark:group-hover:from-gray-100 dark:group-hover:to-gray-300
+                      group-hover:bg-clip-text
+                      transition-all duration-300
+                    ">
+                      {action.title}
+                    </div>
+                    <div className="
+                      text-xs text-gray-500 dark:text-gray-400 mt-1
+                      group-hover:text-gray-600 dark:group-hover:text-gray-300
+                      transition-colors duration-300
+                    ">
+                      {action.description}
+                    </div>
                   </div>
+                  
+                  {/* Shine Effect */}
+                  <div className="
+                    absolute inset-0 opacity-0 group-hover:opacity-100
+                    transition-opacity duration-500
+                    bg-gradient-to-r from-transparent via-white/20 to-transparent
+                    -skew-x-12 group-hover:animate-pulse
+                  " />
                 </Button>
               </div>
             );
