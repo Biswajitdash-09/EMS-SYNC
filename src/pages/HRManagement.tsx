@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,10 +12,11 @@ import AnnouncementModal from '@/components/hr/AnnouncementModal';
 import OrganizationModal from '@/components/hr/OrganizationModal';
 import OnboardingModal from '@/components/hr/OnboardingModal';
 import AccessControlModal from '@/components/hr/AccessControlModal';
-
 const HRManagement = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const {
     policies,
     announcements,
@@ -36,33 +36,28 @@ const HRManagement = () => {
   const [accessControlModalOpen, setAccessControlModalOpen] = useState(false);
   const [editingPolicy, setEditingPolicy] = useState(null);
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
-
-  const handleEditPolicy = (policy) => {
+  const handleEditPolicy = policy => {
     setEditingPolicy(policy);
     setPolicyModalOpen(true);
   };
-
-  const handleEditAnnouncement = (announcement) => {
+  const handleEditAnnouncement = announcement => {
     setEditingAnnouncement(announcement);
     setAnnouncementModalOpen(true);
   };
-
-  const handleDeletePolicy = (policyId) => {
+  const handleDeletePolicy = policyId => {
     deletePolicy(policyId);
     toast({
       title: "Policy Deleted",
-      description: "The policy has been successfully deleted.",
+      description: "The policy has been successfully deleted."
     });
   };
-
-  const handleDeleteAnnouncement = (announcementId) => {
+  const handleDeleteAnnouncement = announcementId => {
     deleteAnnouncement(announcementId);
     toast({
       title: "Announcement Deleted",
-      description: "The announcement has been successfully deleted.",
+      description: "The announcement has been successfully deleted."
     });
   };
-
   const closeModals = () => {
     setPolicyModalOpen(false);
     setAnnouncementModalOpen(false);
@@ -72,15 +67,13 @@ const HRManagement = () => {
     setEditingPolicy(null);
     setEditingAnnouncement(null);
   };
-
-  return (
-    <div className="min-h-screen bg-gray-50">
+  return <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={() => navigate('/dashboard')}>
+              <Button variant="ghost" onClick={() => navigate('/dashboard')} className="bg-red-800 hover:bg-red-700">
                 ← Back to Dashboard
               </Button>
               <div className="flex items-center space-x-2">
@@ -88,10 +81,7 @@ const HRManagement = () => {
                 <h1 className="text-xl font-bold text-gray-900">HR Management</h1>
               </div>
             </div>
-            <Button 
-              className="bg-green-600 hover:bg-green-700"
-              onClick={() => setPolicyModalOpen(true)}
-            >
+            <Button className="bg-green-600 hover:bg-green-700" onClick={() => setPolicyModalOpen(true)}>
               <FileText className="w-4 h-4 mr-2" />
               New Policy
             </Button>
@@ -120,38 +110,24 @@ const HRManagement = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4">
-                  {policies.map((policy) => (
-                    <div key={policy.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                  {policies.map(policy => <div key={policy.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
                       <div>
                         <h4 className="font-medium text-gray-900">{policy.title}</h4>
                         <p className="text-sm text-gray-600">Category: {policy.category}</p>
                         <p className="text-xs text-gray-500">Last updated: {policy.lastUpdated}</p>
-                        <span className={`inline-block px-2 py-1 text-xs rounded-full mt-1 ${
-                          policy.status === 'Active' ? 'bg-green-100 text-green-800' :
-                          policy.status === 'Draft' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
+                        <span className={`inline-block px-2 py-1 text-xs rounded-full mt-1 ${policy.status === 'Active' ? 'bg-green-100 text-green-800' : policy.status === 'Draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>
                           {policy.status}
                         </span>
                       </div>
                       <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleEditPolicy(policy)}
-                        >
+                        <Button variant="outline" size="sm" onClick={() => handleEditPolicy(policy)}>
                           Edit
                         </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleDeletePolicy(policy.id)}
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => handleDeletePolicy(policy.id)}>
                           Delete
                         </Button>
                       </div>
-                    </div>
-                  ))}
+                    </div>)}
                 </div>
               </CardContent>
             </Card>
@@ -190,11 +166,7 @@ const HRManagement = () => {
                     <p className="text-sm text-gray-600">89 positions</p>
                   </div>
                 </div>
-                <Button 
-                  className="w-full" 
-                  variant="outline"
-                  onClick={() => setOrganizationModalOpen(true)}
-                >
+                <Button className="w-full" variant="outline" onClick={() => setOrganizationModalOpen(true)}>
                   <Users className="w-4 h-4 mr-2" />
                   Update Organization Chart
                 </Button>
@@ -253,11 +225,7 @@ const HRManagement = () => {
                     </div>
                   </div>
                 </div>
-                <Button 
-                  className="w-full" 
-                  variant="outline"
-                  onClick={() => setOnboardingModalOpen(true)}
-                >
+                <Button className="w-full" variant="outline" onClick={() => setOnboardingModalOpen(true)}>
                   <Settings className="w-4 h-4 mr-2" />
                   Manage Workflows
                 </Button>
@@ -275,8 +243,7 @@ const HRManagement = () => {
                 <CardDescription>Company-wide announcements and updates ({announcements.length} announcements)</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {announcements.map((announcement) => (
-                  <div key={announcement.id} className="p-4 border rounded-lg">
+                {announcements.map(announcement => <div key={announcement.id} className="p-4 border rounded-lg">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex-1">
                         <h4 className="font-medium text-gray-900">{announcement.title}</h4>
@@ -286,44 +253,24 @@ const HRManagement = () => {
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          announcement.priority === 'High' ? 'bg-red-100 text-red-800' :
-                          announcement.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-green-100 text-green-800'
-                        }`}>
+                        <span className={`px-2 py-1 rounded text-xs ${announcement.priority === 'High' ? 'bg-red-100 text-red-800' : announcement.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
                           {announcement.priority}
                         </span>
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          announcement.status === 'Published' ? 'bg-blue-100 text-blue-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
+                        <span className={`px-2 py-1 rounded text-xs ${announcement.status === 'Published' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
                           {announcement.status}
                         </span>
                       </div>
                     </div>
                     <div className="flex gap-2 mt-3">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleEditAnnouncement(announcement)}
-                      >
+                      <Button variant="outline" size="sm" onClick={() => handleEditAnnouncement(announcement)}>
                         Edit
                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleDeleteAnnouncement(announcement.id)}
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteAnnouncement(announcement.id)}>
                         Delete
                       </Button>
                     </div>
-                  </div>
-                ))}
-                <Button 
-                  className="w-full" 
-                  variant="outline"
-                  onClick={() => setAnnouncementModalOpen(true)}
-                >
+                  </div>)}
+                <Button className="w-full" variant="outline" onClick={() => setAnnouncementModalOpen(true)}>
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Create New Announcement
                 </Button>
@@ -348,11 +295,7 @@ const HRManagement = () => {
                       <p className="text-sm text-gray-600">Full system access</p>
                     </div>
                     <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => setAccessControlModalOpen(true)}
-                      >
+                      <Button variant="outline" size="sm" onClick={() => setAccessControlModalOpen(true)}>
                         Edit
                       </Button>
                       <span className="text-sm text-gray-500">3 users</span>
@@ -364,11 +307,7 @@ const HRManagement = () => {
                       <p className="text-sm text-gray-600">HR and employee management</p>
                     </div>
                     <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => setAccessControlModalOpen(true)}
-                      >
+                      <Button variant="outline" size="sm" onClick={() => setAccessControlModalOpen(true)}>
                         Edit
                       </Button>
                       <span className="text-sm text-gray-500">5 users</span>
@@ -380,11 +319,7 @@ const HRManagement = () => {
                       <p className="text-sm text-gray-600">Basic access to personal data</p>
                     </div>
                     <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => setAccessControlModalOpen(true)}
-                      >
+                      <Button variant="outline" size="sm" onClick={() => setAccessControlModalOpen(true)}>
                         Edit
                       </Button>
                       <span className="text-sm text-gray-500">89 users</span>
@@ -398,36 +333,15 @@ const HRManagement = () => {
       </div>
 
       {/* Modals */}
-      <PolicyModal
-        isOpen={policyModalOpen}
-        onClose={closeModals}
-        onSave={editingPolicy ? updatePolicy : addPolicy}
-        policy={editingPolicy}
-      />
+      <PolicyModal isOpen={policyModalOpen} onClose={closeModals} onSave={editingPolicy ? updatePolicy : addPolicy} policy={editingPolicy} />
 
-      <AnnouncementModal
-        isOpen={announcementModalOpen}
-        onClose={closeModals}
-        onSave={editingAnnouncement ? updateAnnouncement : addAnnouncement}
-        announcement={editingAnnouncement}
-      />
+      <AnnouncementModal isOpen={announcementModalOpen} onClose={closeModals} onSave={editingAnnouncement ? updateAnnouncement : addAnnouncement} announcement={editingAnnouncement} />
 
-      <OrganizationModal
-        isOpen={organizationModalOpen}
-        onClose={closeModals}
-      />
+      <OrganizationModal isOpen={organizationModalOpen} onClose={closeModals} />
 
-      <OnboardingModal
-        isOpen={onboardingModalOpen}
-        onClose={closeModals}
-      />
+      <OnboardingModal isOpen={onboardingModalOpen} onClose={closeModals} />
 
-      <AccessControlModal
-        isOpen={accessControlModalOpen}
-        onClose={closeModals}
-      />
-    </div>
-  );
+      <AccessControlModal isOpen={accessControlModalOpen} onClose={closeModals} />
+    </div>;
 };
-
 export default HRManagement;
