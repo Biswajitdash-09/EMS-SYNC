@@ -1,13 +1,17 @@
 
+/**
+ * Edit Employee Modal Component
+ * Refactored to use smaller form components for better maintainability
+ */
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Employee } from '@/hooks/useEmployeeData';
+import BasicInformationForm from './forms/BasicInformationForm';
+import EmploymentInformationForm from './forms/EmploymentInformationForm';
+import EmergencyContactForm from './forms/EmergencyContactForm';
+import LoginCredentialsForm from './forms/LoginCredentialsForm';
 
 interface EditEmployeeModalProps {
   employee: Employee | null;
@@ -83,216 +87,46 @@ const EditEmployeeModal = ({ employee, onClose, onUpdateEmployee }: EditEmployee
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Basic Information */}
-            <div className="space-y-4">
-              <h4 className="font-semibold">Basic Information</h4>
-              
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  required
-                />
-              </div>
+            <BasicInformationForm
+              formData={{
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                dateOfBirth: formData.dateOfBirth,
+                address: formData.address
+              }}
+              onInputChange={handleInputChange}
+            />
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                <Input
-                  id="dateOfBirth"
-                  type="date"
-                  value={formData.dateOfBirth}
-                  onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
-                <Textarea
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Employment Information */}
-            <div className="space-y-4">
-              <h4 className="font-semibold">Employment Information</h4>
-              
-              <div className="space-y-2">
-                <Label htmlFor="department">Department</Label>
-                <Select value={formData.department} onValueChange={(value) => handleInputChange('department', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Department" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Engineering">Engineering</SelectItem>
-                    <SelectItem value="HR">HR</SelectItem>
-                    <SelectItem value="Finance">Finance</SelectItem>
-                    <SelectItem value="Marketing">Marketing</SelectItem>
-                    <SelectItem value="Sales">Sales</SelectItem>
-                    <SelectItem value="Operations">Operations</SelectItem>
-                    <SelectItem value="Legal">Legal</SelectItem>
-                    <SelectItem value="Design">Design</SelectItem>
-                    <SelectItem value="Product">Product</SelectItem>
-                    <SelectItem value="Customer Support">Customer Support</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="role">Role</Label>
-                <Input
-                  id="role"
-                  value={formData.role}
-                  onChange={(e) => handleInputChange('role', e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Probation">Probation</SelectItem>
-                    <SelectItem value="Terminated">Terminated</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="manager">Manager</Label>
-                <Input
-                  id="manager"
-                  value={formData.manager}
-                  onChange={(e) => handleInputChange('manager', e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="baseSalary">Base Salary</Label>
-                <Input
-                  id="baseSalary"
-                  type="number"
-                  value={formData.baseSalary}
-                  onChange={(e) => handleInputChange('baseSalary', parseInt(e.target.value))}
-                  required
-                />
-              </div>
-            </div>
+            <EmploymentInformationForm
+              formData={{
+                department: formData.department,
+                role: formData.role,
+                status: formData.status,
+                manager: formData.manager,
+                baseSalary: formData.baseSalary
+              }}
+              onInputChange={handleInputChange}
+            />
           </div>
 
-          {/* Emergency Contact */}
-          <div className="space-y-4">
-            <h4 className="font-semibold">Emergency Contact</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="emergencyContactName">Contact Name</Label>
-                <Input
-                  id="emergencyContactName"
-                  value={formData.emergencyContactName}
-                  onChange={(e) => handleInputChange('emergencyContactName', e.target.value)}
-                  required
-                />
-              </div>
+          <EmergencyContactForm
+            formData={{
+              emergencyContactName: formData.emergencyContactName,
+              emergencyContactPhone: formData.emergencyContactPhone,
+              emergencyContactRelationship: formData.emergencyContactRelationship
+            }}
+            onInputChange={handleInputChange}
+          />
 
-              <div className="space-y-2">
-                <Label htmlFor="emergencyContactPhone">Contact Phone</Label>
-                <Input
-                  id="emergencyContactPhone"
-                  value={formData.emergencyContactPhone}
-                  onChange={(e) => handleInputChange('emergencyContactPhone', e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="emergencyContactRelationship">Relationship</Label>
-                <Input
-                  id="emergencyContactRelationship"
-                  value={formData.emergencyContactRelationship}
-                  onChange={(e) => handleInputChange('emergencyContactRelationship', e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Login Credentials Section */}
-          <div className="space-y-4 border-t pt-6">
-            <h4 className="font-semibold text-blue-600">Login Credentials</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="loginEmail">Login Email</Label>
-                <Input
-                  id="loginEmail"
-                  type="email"
-                  value={formData.loginEmail}
-                  onChange={(e) => handleInputChange('loginEmail', e.target.value)}
-                  placeholder="employee.login@company.com"
-                  required
-                />
-                <p className="text-sm text-gray-500">Email used for employee login</p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="loginPassword">Login Password</Label>
-                <Input
-                  id="loginPassword"
-                  type="password"
-                  value={formData.loginPassword}
-                  onChange={(e) => handleInputChange('loginPassword', e.target.value)}
-                  placeholder="Enter new password"
-                  required
-                />
-                <p className="text-sm text-gray-500">Password for employee access</p>
-              </div>
-
-              <div className="md:col-span-2">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="isLoginActive"
-                    checked={formData.isLoginActive}
-                    onCheckedChange={(checked) => handleInputChange('isLoginActive', checked)}
-                  />
-                  <Label htmlFor="isLoginActive">Enable Login Access</Label>
-                </div>
-                <p className="text-sm text-gray-500 mt-1">
-                  {formData.isLoginActive ? 'Employee can log in to their dashboard' : 'Employee login is disabled'}
-                </p>
-              </div>
-            </div>
-          </div>
+          <LoginCredentialsForm
+            formData={{
+              loginEmail: formData.loginEmail,
+              loginPassword: formData.loginPassword,
+              isLoginActive: formData.isLoginActive
+            }}
+            onInputChange={handleInputChange}
+          />
 
           <div className="flex justify-end gap-4 pt-4 border-t">
             <Button type="button" variant="outline" onClick={onClose}>
