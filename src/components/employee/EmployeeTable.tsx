@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Eye, Edit, Trash2 } from 'lucide-react';
+import { Eye, Edit, Trash2, Key, KeyOff } from 'lucide-react';
 import { Employee } from '@/hooks/useEmployeeData';
 
 interface EmployeeTableProps {
@@ -56,6 +56,7 @@ const EmployeeTable = ({
             <TableHead>Department</TableHead>
             <TableHead>Role</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Login Access</TableHead>
             <TableHead>Join Date</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -88,6 +89,24 @@ const EmployeeTable = ({
                 <Badge className={getStatusColor(employee.status)}>
                   {employee.status}
                 </Badge>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center space-x-2">
+                  {employee.loginCredentials?.isActive ? (
+                    <div className="flex items-center space-x-1 text-green-600">
+                      <Key className="w-4 h-4" />
+                      <span className="text-sm">Active</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-1 text-red-600">
+                      <KeyOff className="w-4 h-4" />
+                      <span className="text-sm">Disabled</span>
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-500">
+                    {employee.loginCredentials?.loginEmail}
+                  </div>
+                </div>
               </TableCell>
               <TableCell>{new Date(employee.joinDate).toLocaleDateString()}</TableCell>
               <TableCell>

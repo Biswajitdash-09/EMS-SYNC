@@ -2,7 +2,7 @@
 /**
  * Employee data type definitions
  * Defines the structure for employee records in the HR system
- * Includes personal info, employment details, and document management
+ * Includes personal info, employment details, document management, and login credentials
  */
 
 export interface Employee {
@@ -33,6 +33,13 @@ export interface Employee {
   // Management and compensation
   manager: string;
   baseSalary: number;
+  
+  // Login credentials (set by admin)
+  loginCredentials: {
+    loginEmail: string;
+    password: string;
+    isActive: boolean;
+  };
   
   // Employment history tracking
   employmentHistory: Array<{

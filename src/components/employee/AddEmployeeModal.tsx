@@ -2,7 +2,7 @@
 /**
  * Add Employee Modal Component
  * Modal form for adding new employees to the system
- * Handles comprehensive employee data collection including personal details and emergency contacts
+ * Handles comprehensive employee data collection including personal details, emergency contacts, and login credentials
  */
 
 import { useState } from 'react';
@@ -25,7 +25,7 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
   // Profile picture upload state
   const [profilePicture, setProfilePicture] = useState<string>('');
   
-  // Employee form data state
+  // Employee form data state including login credentials
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -40,17 +40,26 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
     emergencyContactPhone: '',
     emergencyContactRelationship: '',
     manager: '',
-    baseSalary: 0
+    baseSalary: 0,
+    loginEmail: '',
+    loginPassword: '',
+    isLoginActive: true
   });
 
   /**
    * Handle form submission
-   * Validates and processes new employee data
+   * Validates and processes new employee data including login credentials
    */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Construct complete employee object
+    // Validate required fields
+    if (!formData.name || !formData.email || !formData.department || !formData.role || !formData.joinDate || !formData.loginEmail || !formData.loginPassword) {
+      alert('Please fill in all required fields including login credentials.');
+      return;
+    }
+    
+    // Construct complete employee object with login credentials
     const newEmployee: Omit<Employee, 'id'> = {
       name: formData.name,
       email: formData.email,
@@ -69,6 +78,12 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
       },
       manager: formData.manager,
       baseSalary: formData.baseSalary,
+      // Add login credentials
+      loginCredentials: {
+        loginEmail: formData.loginEmail,
+        password: formData.loginPassword,
+        isActive: formData.isLoginActive
+      },
       // Initialize employment history with current role
       employmentHistory: [{
         title: formData.role,
@@ -99,7 +114,10 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
       emergencyContactPhone: '',
       emergencyContactRelationship: '',
       manager: '',
-      baseSalary: 0
+      baseSalary: 0,
+      loginEmail: '',
+      loginPassword: '',
+      isLoginActive: true
     });
     setProfilePicture('');
   };
@@ -115,16 +133,16 @@ const AddEmployeeModal = ({ onAddEmployee }: AddEmployeeModalProps) => {
       </DialogTrigger>
       
       {/* Modal content */}
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add New Employee</DialogTitle>
           <DialogDescription>
-            Fill in the employee details to add them to the system.
+            Fill in the employee details including login credentials to add them to the system.
           </DialogDescription>
         </DialogHeader>
         
         {/* Employee form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Profile picture upload section */}
           <ProfilePictureUpload
             profilePicture={profilePicture}

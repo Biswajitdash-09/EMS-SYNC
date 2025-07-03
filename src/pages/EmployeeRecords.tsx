@@ -15,6 +15,7 @@ import EditEmployeeModal from '@/components/employee/EditEmployeeModal';
 import PersonalDetailsTab from '@/components/employee/PersonalDetailsTab';
 import EmploymentHistoryTab from '@/components/employee/EmploymentHistoryTab';
 import DocumentsTab from '@/components/employee/DocumentsTab';
+import LoginCredentialsTab from '@/components/employee/LoginCredentialsTab';
 
 const EmployeeRecords = () => {
   const navigate = useNavigate();
@@ -73,6 +74,18 @@ const EmployeeRecords = () => {
     }
   };
 
+  const handleUpdateCredentials = (employeeId: string, credentials: { loginEmail: string; password: string; isActive: boolean }) => {
+    const updates = {
+      loginCredentials: credentials
+    };
+    updateEmployee(employeeId, updates);
+    
+    // Update selected employee if it's the same as the one being updated
+    if (selectedEmployee?.id === employeeId) {
+      setSelectedEmployee(prev => prev ? { ...prev, loginCredentials: credentials } : null);
+    }
+  };
+
   const handleDocumentUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file || !selectedEmployee) return;
@@ -121,11 +134,12 @@ const EmployeeRecords = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="personal">Personal Details</TabsTrigger>
             <TabsTrigger value="employment">Employment History</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
+            <TabsTrigger value="credentials">Login Credentials</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -181,6 +195,13 @@ const EmployeeRecords = () => {
             <DocumentsTab 
               selectedEmployee={selectedEmployee}
               onDocumentUpload={handleDocumentUpload}
+            />
+          </TabsContent>
+
+          <TabsContent value="credentials" className="space-y-6">
+            <LoginCredentialsTab 
+              selectedEmployee={selectedEmployee}
+              onUpdateCredentials={handleUpdateCredentials}
             />
           </TabsContent>
         </Tabs>

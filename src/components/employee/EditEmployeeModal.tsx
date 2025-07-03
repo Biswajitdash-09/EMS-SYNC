@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { Employee } from '@/hooks/useEmployeeData';
 
 interface EditEmployeeModalProps {
@@ -28,10 +29,13 @@ const EditEmployeeModal = ({ employee, onClose, onUpdateEmployee }: EditEmployee
     baseSalary: employee?.baseSalary || 0,
     emergencyContactName: employee?.emergencyContact?.name || '',
     emergencyContactPhone: employee?.emergencyContact?.phone || '',
-    emergencyContactRelationship: employee?.emergencyContact?.relationship || ''
+    emergencyContactRelationship: employee?.emergencyContact?.relationship || '',
+    loginEmail: employee?.loginCredentials?.loginEmail || '',
+    loginPassword: employee?.loginCredentials?.password || '',
+    isLoginActive: employee?.loginCredentials?.isActive || false
   });
 
-  const handleInputChange = (field: string, value: string | number) => {
+  const handleInputChange = (field: string, value: string | number | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -53,6 +57,11 @@ const EditEmployeeModal = ({ employee, onClose, onUpdateEmployee }: EditEmployee
         name: formData.emergencyContactName,
         phone: formData.emergencyContactPhone,
         relationship: formData.emergencyContactRelationship
+      },
+      loginCredentials: {
+        loginEmail: formData.loginEmail,
+        password: formData.loginPassword,
+        isActive: formData.isLoginActive
       }
     };
 
@@ -64,11 +73,11 @@ const EditEmployeeModal = ({ employee, onClose, onUpdateEmployee }: EditEmployee
 
   return (
     <Dialog open={!!employee} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Employee - {employee.name}</DialogTitle>
           <DialogDescription>
-            Update employee information for {employee.name} ({employee.id})
+            Update employee information including login credentials for {employee.name} ({employee.id})
           </DialogDescription>
         </DialogHeader>
         
@@ -147,6 +156,11 @@ const EditEmployeeModal = ({ employee, onClose, onUpdateEmployee }: EditEmployee
                     <SelectItem value="Finance">Finance</SelectItem>
                     <SelectItem value="Marketing">Marketing</SelectItem>
                     <SelectItem value="Sales">Sales</SelectItem>
+                    <SelectItem value="Operations">Operations</SelectItem>
+                    <SelectItem value="Legal">Legal</SelectItem>
+                    <SelectItem value="Design">Design</SelectItem>
+                    <SelectItem value="Product">Product</SelectItem>
+                    <SelectItem value="Customer Support">Customer Support</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -230,6 +244,52 @@ const EditEmployeeModal = ({ employee, onClose, onUpdateEmployee }: EditEmployee
                   onChange={(e) => handleInputChange('emergencyContactRelationship', e.target.value)}
                   required
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Login Credentials Section */}
+          <div className="space-y-4 border-t pt-6">
+            <h4 className="font-semibold text-blue-600">Login Credentials</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="loginEmail">Login Email</Label>
+                <Input
+                  id="loginEmail"
+                  type="email"
+                  value={formData.loginEmail}
+                  onChange={(e) => handleInputChange('loginEmail', e.target.value)}
+                  placeholder="employee.login@company.com"
+                  required
+                />
+                <p className="text-sm text-gray-500">Email used for employee login</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="loginPassword">Login Password</Label>
+                <Input
+                  id="loginPassword"
+                  type="password"
+                  value={formData.loginPassword}
+                  onChange={(e) => handleInputChange('loginPassword', e.target.value)}
+                  placeholder="Enter new password"
+                  required
+                />
+                <p className="text-sm text-gray-500">Password for employee access</p>
+              </div>
+
+              <div className="md:col-span-2">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="isLoginActive"
+                    checked={formData.isLoginActive}
+                    onCheckedChange={(checked) => handleInputChange('isLoginActive', checked)}
+                  />
+                  <Label htmlFor="isLoginActive">Enable Login Access</Label>
+                </div>
+                <p className="text-sm text-gray-500 mt-1">
+                  {formData.isLoginActive ? 'Employee can log in to their dashboard' : 'Employee login is disabled'}
+                </p>
               </div>
             </div>
           </div>
