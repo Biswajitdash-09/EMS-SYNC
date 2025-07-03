@@ -75,6 +75,12 @@ export const createEmployeeFromForm = (employeeForm: EmployeeFormData): Omit<Emp
     },
     manager: 'Not assigned',
     baseSalary: parseInt(employeeForm.baseSalary) || 50000,
+    // Add required login credentials with default values
+    loginCredentials: {
+      loginEmail: employeeForm.email.trim(),
+      password: 'TempPass123!',
+      isActive: true
+    },
     employmentHistory: [{
       title: employeeForm.position?.trim() || 'Employee',
       department: employeeForm.department,

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Key, KeyOff, Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { Key, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { Employee } from '@/hooks/useEmployeeData';
 import { useState } from 'react';
 
@@ -98,7 +98,7 @@ const LoginCredentialsTab = ({ selectedEmployee, onUpdateCredentials }: LoginCre
               {credentials?.isActive ? (
                 <><Key className="w-3 h-3 mr-1" /> Active</>
               ) : (
-                <><KeyOff className="w-3 h-3 mr-1" /> Disabled</>
+                <><Key className="w-3 h-3 mr-1 opacity-50" /> Disabled</>
               )}
             </Badge>
           </div>

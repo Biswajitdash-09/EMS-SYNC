@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Eye, Edit, Trash2, Key, KeyOff } from 'lucide-react';
+import { Eye, Edit, Trash2, Key } from 'lucide-react';
 import { Employee } from '@/hooks/useEmployeeData';
 
 interface EmployeeTableProps {
@@ -99,7 +99,7 @@ const EmployeeTable = ({
                     </div>
                   ) : (
                     <div className="flex items-center space-x-1 text-red-600">
-                      <KeyOff className="w-4 h-4" />
+                      <Key className="w-4 h-4 opacity-50" />
                       <span className="text-sm">Disabled</span>
                     </div>
                   )}
