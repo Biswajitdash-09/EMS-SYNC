@@ -3,9 +3,10 @@
  * Employee Dashboard Page
  * Main dashboard for employees after login
  * Features: Profile view, leave application, salary details, logout
+ * Now uses real employee data from authentication
  */
 
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,44 +29,34 @@ import {
 import EmployeeProfileView from '@/components/employee-dashboard/EmployeeProfileView';
 import EmployeeLeaveApplication from '@/components/employee-dashboard/EmployeeLeaveApplication';
 import EmployeeSalaryDetails from '@/components/employee-dashboard/EmployeeSalaryDetails';
+import { useEmployeeAuth } from '@/contexts/EmployeeAuthContext';
 
 const EmployeeDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  // Mock employee data - will be replaced with Supabase data
-  const [currentEmployee] = useState({
-    id: 'EMP001',
-    name: 'John Doe',
-    email: 'john.doe@company.com',
-    phone: '+1 (555) 0123',
-    department: 'Engineering',
-    role: 'Senior Developer',
-    joinDate: '2023-01-15',
-    profilePicture: '',
-    manager: 'Jane Smith',
-    address: '123 Main St, City, State 12345',
-    emergencyContact: {
-      name: 'Jane Doe',
-      phone: '+1 (555) 0124',
-      relationship: 'Spouse'
-    },
-    salary: {
-      basic: 75000,
-      allowances: 15000,
-      deductions: 5000,
-      netSalary: 85000
-    },
-    leaveBalance: {
-      annual: 20,
-      sick: 10,
-      personal: 5
+  const { employee, isAuthenticated, isLoading, logout, refreshEmployeeData } = useEmployeeAuth();
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      toast({
+        title: "Access Denied",
+        description: "Please log in to access your dashboard.",
+        variant: "destructive",
+      });
+      navigate('/');
     }
-  });
+  }, [isAuthenticated, isLoading, navigate, toast]);
+
+  // Refresh employee data on mount to ensure sync with admin portal
+  useEffect(() => {
+    if (isAuthenticated) {
+      refreshEmployeeData();
+    }
+  }, [isAuthenticated, refreshEmployeeData]);
 
   const handleLogout = () => {
-    // Clear any stored authentication data
-    localStorage.removeItem('employee-auth');
+    logout();
     toast({
       title: "Logged out successfully",
       description: "You have been logged out of your account.",
@@ -79,6 +70,44 @@ const EmployeeDashboard = () => {
       .map(n => n[0])
       .join('')
       .toUpperCase();
+  };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!isAuthenticated || !employee) {
+    return null;
+  }
+
+  // Transform employee data for the salary component
+  const salaryData = {
+    basic: employee.baseSalary,
+    allowances: Math.round(employee.baseSalary * 0.2), // 20% allowances
+    deductions: Math.round(employee.baseSalary * 0.1), // 10% deductions
+    netSalary: Math.round(employee.baseSalary * 1.1) // Net after allowances and deductions
+  };
+
+  // Mock leave balance - in production, this would come from the employee record
+  const leaveBalance = {
+    annual: 20,
+    sick: 10,
+    personal: 5
+  };
+
+  const employeeWithSalaryAndLeave = {
+    ...employee,
+    salary: salaryData,
+    leaveBalance: leaveBalance
   };
 
   return (
@@ -98,12 +127,12 @@ const EmployeeDashboard = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={currentEmployee.profilePicture} alt={currentEmployee.name} />
-                  <AvatarFallback>{getInitials(currentEmployee.name)}</AvatarFallback>
+                  <AvatarImage src={employee.profilePicture} alt={employee.name} />
+                  <AvatarFallback>{getInitials(employee.name)}</AvatarFallback>
                 </Avatar>
                 <div className="hidden md:block">
-                  <div className="text-sm font-medium text-gray-900 dark:text-white">{currentEmployee.name}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">{currentEmployee.role}</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">{employee.name}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{employee.role}</div>
                 </div>
               </div>
               
@@ -126,11 +155,18 @@ const EmployeeDashboard = () => {
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Welcome back, {currentEmployee.name.split(' ')[0]}!
+            Welcome back, {employee.name.split(' ')[0]}!
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
             Manage your profile, apply for leave, and view your salary details.
           </p>
+          <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
+            <span>Employee ID: {employee.id}</span>
+            <span>•</span>
+            <span>Department: {employee.department}</span>
+            <span>•</span>
+            <span>Status: <Badge variant={employee.status === 'Active' ? 'default' : 'secondary'}>{employee.status}</Badge></span>
+          </div>
         </div>
 
         {/* Quick Stats */}
@@ -141,7 +177,7 @@ const EmployeeDashboard = () => {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{currentEmployee.leaveBalance.annual}</div>
+              <div className="text-2xl font-bold">{leaveBalance.annual}</div>
               <p className="text-xs text-muted-foreground">days remaining</p>
             </CardContent>
           </Card>
@@ -152,7 +188,7 @@ const EmployeeDashboard = () => {
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{currentEmployee.leaveBalance.sick}</div>
+              <div className="text-2xl font-bold">{leaveBalance.sick}</div>
               <p className="text-xs text-muted-foreground">days remaining</p>
             </CardContent>
           </Card>
@@ -163,19 +199,19 @@ const EmployeeDashboard = () => {
               <User className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{currentEmployee.leaveBalance.personal}</div>
+              <div className="text-2xl font-bold">{leaveBalance.personal}</div>
               <p className="text-xs text-muted-foreground">days remaining</p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Net Salary</CardTitle>
+              <CardTitle className="text-sm font-medium">Base Salary</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${currentEmployee.salary.netSalary.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">monthly</p>
+              <div className="text-2xl font-bold">${employee.baseSalary.toLocaleString()}</div>
+              <p className="text-xs text-muted-foreground">annual</p>
             </CardContent>
           </Card>
         </div>
@@ -198,15 +234,15 @@ const EmployeeDashboard = () => {
           </TabsList>
 
           <TabsContent value="profile" className="space-y-6">
-            <EmployeeProfileView employee={currentEmployee} />
+            <EmployeeProfileView employee={employeeWithSalaryAndLeave} />
           </TabsContent>
 
           <TabsContent value="leave" className="space-y-6">
-            <EmployeeLeaveApplication employee={currentEmployee} />
+            <EmployeeLeaveApplication employee={employeeWithSalaryAndLeave} />
           </TabsContent>
 
           <TabsContent value="salary" className="space-y-6">
-            <EmployeeSalaryDetails employee={currentEmployee} />
+            <EmployeeSalaryDetails employee={employeeWithSalaryAndLeave} />
           </TabsContent>
         </Tabs>
       </div>

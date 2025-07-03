@@ -1,7 +1,7 @@
 
 /**
  * Employee Authentication Modal
- * Separate login interface for employees
+ * Separate login interface for employees with real credential validation
  */
 
 import { useState } from 'react';
@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
+import { authenticateEmployee, storeEmployeeAuth } from '@/services/employeeAuthService';
 
 interface EmployeeAuthModalProps {
   open: boolean;
@@ -32,32 +33,38 @@ const EmployeeAuthModal = ({ open, onClose }: EmployeeAuthModalProps) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Mock authentication - will be replaced with Supabase authentication
-    if (formData.email && formData.password) {
-      // Simulate API call
-      setTimeout(() => {
-        // Store employee authentication data
-        localStorage.setItem('employee-auth', JSON.stringify({
-          email: formData.email,
-          loginTime: new Date().toISOString(),
-          role: 'employee'
-        }));
+    try {
+      // Validate credentials against employee records
+      const authData = authenticateEmployee(formData.email, formData.password);
+      
+      if (authData) {
+        // Store authentication data
+        storeEmployeeAuth(authData);
 
         toast({
           title: "Login Successful",
-          description: "Welcome to your employee dashboard!",
+          description: `Welcome ${authData.employee.name}! Redirecting to your dashboard...`,
         });
 
-        setIsLoading(false);
+        // Reset form and navigate
+        setFormData({ email: '', password: '' });
         onClose();
         navigate('/employee-dashboard');
-      }, 1500);
-    } else {
+      } else {
+        toast({
+          title: "Login Failed",
+          description: "Invalid email or password. Please check your credentials and try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       toast({
-        title: "Login Failed",
-        description: "Please enter valid credentials.",
+        title: "Login Error",
+        description: "An error occurred during login. Please try again.",
         variant: "destructive",
       });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -133,6 +140,9 @@ const EmployeeAuthModal = ({ open, onClose }: EmployeeAuthModalProps) => {
         <div className="text-center">
           <p className="text-sm text-gray-600">
             Having trouble logging in? Contact your administrator.
+          </p>
+          <p className="text-xs text-gray-500 mt-2">
+            Use your assigned work email and password to access your dashboard.
           </p>
         </div>
       </DialogContent>
