@@ -1,12 +1,15 @@
+
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Users, Shield, BarChart3, Calendar, FileText, Settings, DollarSign, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import AuthModal from '@/components/AuthModal';
+import EmployeeAuthModal from '@/components/EmployeeAuthModal';
 import ThemeToggle from '@/components/ThemeToggle';
 
 const Index = () => {
   const [showAuth, setShowAuth] = useState(false);
+  const [showEmployeeAuth, setShowEmployeeAuth] = useState(false);
   const navigate = useNavigate();
 
   const features = [{
@@ -56,8 +59,15 @@ const Index = () => {
             </div>
             <div className="flex items-center space-x-4">
               <ThemeToggle />
+              <Button 
+                onClick={() => setShowEmployeeAuth(true)} 
+                variant="outline"
+                className="border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+              >
+                Employee Login
+              </Button>
               <Button onClick={() => setShowAuth(true)} className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-2 rounded-lg transition-all duration-300 hover:shadow-lg">
-                Get Started
+                Admin Login
               </Button>
             </div>
           </div>
@@ -83,10 +93,10 @@ const Index = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button onClick={() => setShowAuth(true)} size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 text-lg rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105">
-                Start Free Trial
+                Admin Portal
               </Button>
-              <Button onClick={() => navigate('/dashboard')} variant="outline" size="lg" className="px-8 py-4 text-lg rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 border-gray-300 dark:border-gray-600">
-                View Demo
+              <Button onClick={() => setShowEmployeeAuth(true)} variant="outline" size="lg" className="px-8 py-4 text-lg rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 border-blue-300 dark:border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                Employee Portal
               </Button>
             </div>
           </div>
@@ -126,7 +136,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 to-indigo-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8 text-center">
@@ -150,20 +159,23 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-20 bg-gray-900 dark:bg-gray-950">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-white mb-6">Ready to Transform Your HR?</h2>
           <p className="text-xl text-gray-300 mb-8">
             Join thousands of companies already using our Employee Management System
           </p>
-          <Button onClick={() => setShowAuth(true)} size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 text-lg rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105">
-            Get Started Today
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button onClick={() => setShowAuth(true)} size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 text-lg rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105">
+              Get Started Today
+            </Button>
+            <Button onClick={() => setShowEmployeeAuth(true)} variant="outline" size="lg" className="px-8 py-4 text-lg rounded-xl transition-all duration-300 hover:shadow-xl hover:scale-105 border-white text-white hover:bg-white hover:text-gray-900">
+              Employee Access
+            </Button>
+          </div>
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-gray-800 dark:bg-gray-900 text-gray-300 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
@@ -208,8 +220,9 @@ const Index = () => {
         </div>
       </footer>
 
-      {/* Auth Modal */}
+      {/* Auth Modals */}
       <AuthModal open={showAuth} onClose={() => setShowAuth(false)} />
+      <EmployeeAuthModal open={showEmployeeAuth} onClose={() => setShowEmployeeAuth(false)} />
     </div>;
 };
 

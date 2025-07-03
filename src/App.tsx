@@ -13,6 +13,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
+import EmployeeDashboard from "./pages/EmployeeDashboard";
 import QuickActionsPage from "./pages/QuickActionsPage";
 import EmployeeRecords from "./pages/EmployeeRecords";
 import HRManagement from "./pages/HRManagement";
@@ -43,8 +44,11 @@ const App = () => (
             {/* Landing page */}
             <Route path="/" element={<Index />} />
             
-            {/* Main dashboard */}
+            {/* Admin dashboard */}
             <Route path="/dashboard" element={<Dashboard />} />
+            
+            {/* Employee dashboard */}
+            <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
             
             {/* Quick actions interface */}
             <Route path="/quick-actions" element={<QuickActionsPage />} />
